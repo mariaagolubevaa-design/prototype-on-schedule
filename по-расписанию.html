@@ -293,13 +293,10 @@
         -webkit-overflow-scrolling:touch;
         scrollbar-width:none;">
         <div class="freq-chip freq-chip--active" data-chip>
-          <p>Раз в неделю</p>
-        </div>
-        <div class="freq-chip" data-chip>
           <p>Раз в месяц</p>
         </div>
         <div class="freq-chip" data-chip>
-          <p>Giga Chat</p>
+          <p>Раз в неделю</p>
         </div>
       </div>
 
@@ -1258,7 +1255,7 @@
           curAmt  = '4167';
           amountValueText.textContent = fmtAmt('4167');
           chips.forEach(function (c) { c.classList.remove('freq-chip--active'); });
-          chips[1].classList.add('freq-chip--active');
+          chips[0].classList.add('freq-chip--active');
           setAmountError(false);
           closeGc();
         });
