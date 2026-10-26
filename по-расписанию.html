@@ -1187,17 +1187,17 @@
         var sel = document.querySelector('.cal-day--selected p');
         return sel ? sel.textContent.trim() : '24';
       })();
-      window.location.href = 'подключено.html?amount=' + prevAmt + '&day=' + day;
+      window.location.href = 'подключено.html?amount=' + prevAmt + '&day=' + day + '&from=1';
     });
 
     document.getElementById('connectBtn2').addEventListener('click', function () {
       if (wasDragged) return;
-      window.location.href = 'подключено.html';
+      window.location.href = 'подключено.html?from=2';
     });
 
     document.getElementById('connectBtnExpenses').addEventListener('click', function () {
       if (wasDragged) return;
-      window.location.href = 'подключено.html';
+      window.location.href = 'подключено.html?from=3';
     });
 
     /* ── GigaChat sheet ── */
