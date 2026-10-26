@@ -1085,7 +1085,7 @@
 
     function refreshDisplay() {
       amountValueText.textContent = fmtAmt(curAmt);
-      if (curAmt) {
+      if (!kbIsOpen && curAmt) {
         var t = calcTooltipText(curAmt);
         if (t !== null) tooltipText.textContent = t;
       }
@@ -1101,7 +1101,7 @@
         tooltipText.style.color = '#E35502';
         tooltipText.style.whiteSpace = 'normal';
         tooltipText.style.textAlign = 'left';
-        tooltipText.textContent = 'Сумма перевода должна быть больше 100 рублей';
+        tooltipText.textContent = 'Минимум 100 ₽';
       } else {
         amountCell.style.background = '#fff';
         amountLabel.style.color = '#737373';
@@ -1119,7 +1119,9 @@
       if (kbIsOpen) return;
       kbIsOpen = true;
       curAmt = '';
-      refreshDisplay();
+      amountValueText.textContent = fmtAmt(curAmt);
+      if (amountError) setAmountError(false);
+      tooltipText.textContent = 'Минимум 100 ₽';
       kbOverlay.style.opacity = '1';
       kbOverlay.style.pointerEvents = 'auto';
       kbSheet.style.transform = 'translateY(0)';
