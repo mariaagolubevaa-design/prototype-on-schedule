@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="arrow-block-up">
+<g id="Icon">
+<use xlink:href="#stroke0_0_606" fill="black"/>
+<mask id="stroke1_0_606" maskUnits="userSpaceOnUse" x="5" y="3" width="16" height="19" fill="black">
+<rect fill="white" x="5" y="3" width="16" height="19"/>
+<use xlink:href="#stroke0_0_606"/>
+</mask>
+<path d="M10 12.3111H6L13 4L20 12.3111H16V19.4C16 19.9601 16 20.2401 15.891 20.454C15.7951 20.6422 15.6422 20.7951 15.454 20.891C15.2401 21 14.9601 21 14.4 21H11.6C11.0399 21 10.7599 21 10.546 20.891C10.3578 20.7951 10.2049 20.6422 10.109 20.454C10 20.2401 10 19.9601 10 19.4V12.3111Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black" mask="url(#stroke1_0_606)"/>
+</g>
+</g>
+<defs>
+<path id="stroke0_0_606" d="M6 12.3111H10V19.4C10 19.9601 10 20.2401 10.109 20.454C10.2049 20.6422 10.3578 20.7951 10.546 20.891C10.7599 21 11.0399 21 11.6 21H14.4C14.9601 21 15.2401 21 15.454 20.891C15.6422 20.7951 15.7951 20.6422 15.891 20.454C16 20.2401 16 19.9601 16 19.4V12.3111H20L13 4L6 12.3111Z"/>
+</defs>
+</svg>

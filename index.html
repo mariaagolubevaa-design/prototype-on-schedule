@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СберБанк — Главная</title>
+  <style>
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB Sans Text.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/sb-sans-text-medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Semibold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    :root {
+      /* bg */
+      --bg-page: #f1f1f1;
+      --bg-hero-mesh-teal: #7cb2b2;
+      --bg-hero-mesh-lime: #c8f4cc;
+      --bg-hero-mesh-aqua: #b3e1de;
+
+      /* surface */
+      --surface-glass: rgba(255, 255, 255, 0.45);
+      --surface-secondary: #f5f5f5;
+      --surface-tabbar: #fcfcfc;
+      --surface-tabbar-glow: #e1f6f4;
+
+      /* border */
+      --border-glass: rgba(255, 255, 255, 0.5);
+      --border-default: #e0e0e0;
+
+      /* fill */
+      --fill-tertiary: rgba(0, 0, 0, 0.04);
+
+      /* text */
+      --text-primary: #000000;
+      --text-on-hero-secondary: rgba(0, 0, 0, 0.55);
+      --text-tertiary: #a7a7a7;
+      --text-link: #0d8523;
+
+      /* icon */
+      --icon-accent: #148f2b;
+      --icon-secondary: #a7a7a7;
+      --icon-default: #000000;
+
+      /* accent */
+      --accent-primary: #148f2b;
+
+      /* typography */
+      --font-family-base: 'SB Sans Text', -apple-system, sans-serif;
+      --font-size-footnote: 13px;
+      --font-size-body: 15px;
+      --font-size-caption: 11px;
+      --font-size-title: 20px;
+      --font-weight-button: 400;
+      --font-weight-caption: 500;
+      --font-weight-title: 600;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: var(--font-family-base);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-synthesis: none;
+    }
+
+    .phone {
+      position: relative;
+      width: 402px;
+      height: 874px;
+      overflow: hidden;
+      border-radius: 50px;
+      background: var(--bg-page);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 402px;
+      height: 62px;
+      z-index: 10;
+      display: block;
+    }
+    .status-bar img {
+      display: block;
+      width: 402px;
+      height: 62px;
+    }
+
+    /* ── HERO GRADIENT ── */
+    .hero {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 402px;
+      height: 421px;
+      background: var(--bg-hero-mesh-aqua);
+      overflow: hidden;
+    }
+    .blob-teal {
+      position: absolute;
+      width: 420px;
+      height: 440px;
+      left: -210px;
+      top: 20px;
+    }
+    .blob-mint {
+      position: absolute;
+      width: 380px;
+      height: 360px;
+      left: 50px;
+      top: -120px;
+    }
+    .blob-aqua {
+      position: absolute;
+      width: 240px;
+      height: 200px;
+      left: 90px;
+      top: 200px;
+    }
+    .blob-teal img, .blob-mint img, .blob-aqua img {
+      position: absolute;
+      width: 160%;
+      height: 160%;
+      top: -30%;
+      left: -30%;
+      max-width: none;
+    }
+    .hero-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(230,238,238,0) 68%, #e6eeee 100%);
+    }
+
+    /* ── NAV BAR ── */
+    .nav-bar {
+      position: absolute;
+      top: 62px;
+      left: 0;
+      width: 402px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      z-index: 5;
+    }
+    .nav-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .nav-avatar img {
+      width: 100%;
+      height: 133.33%;
+      object-fit: cover;
+      margin-top: -9.18%;
+    }
+    .nav-search {
+      flex: 0 0 220px;
+      height: 42px;
+      background: var(--fill-tertiary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      gap: 2px;
+    }
+    .nav-search img { width: 28px; height: 28px; flex-shrink: 0; }
+    .nav-search span {
+      font-size: var(--font-size-footnote);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: var(--text-on-hero-secondary);
+      white-space: nowrap;
+    }
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .nav-icons img { display: block; }
+
+    /* ── BALANCE AREA ── */
+    .balance-area {
+      position: absolute;
+      top: 166px;
+      left: 116px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+    .eye-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .eye-icon img { width: 16.25px; height: 13px; }
+    .balance-sum-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .balance-sum {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      line-height: normal;
+    }
+    .balance-amount {
+      font-family: var(--font-family-base);
+      font-weight: 500;
+      font-size: 40px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      letter-spacing: -0.5px;
+    }
+    .balance-currency {
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      font-size: 41px;
+      color: var(--text-on-hero-secondary);
+      width: 24px;
+    }
+    .balance-chevron { width: 28px; height: 28px; }
+
+    /* ── COUNTER PILL ── */
+    .counter-pill {
+      position: absolute;
+      top: 219px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      height: 30px;
+      padding: 5px 10px 6px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 5;
+    }
+    .counter-pill span {
+      font-size: var(--font-size-body);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: var(--text-primary);
+    }
+    .counter-pill img { width: 13px; height: 13px; }
+
+    /* ── ACTION BUTTONS ── */
+    .action-btn {
+      position: absolute;
+      top: 321px;
+      width: 118px;
+      height: 90px;
+      background: var(--surface-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      cursor: pointer;
+    }
+    .action-btn.qr { left: 16px; }
+    .action-btn.transfer { left: 142px; }
+    .action-btn.settings { left: 268px; border-width: 1.5px; }
+
+    .action-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .action-inner img { width: 40px; height: 36px; }
+    .action-inner.settings-inner { gap: 4px; }
+    .action-label {
+      font-size: var(--font-size-footnote);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: var(--text-primary);
+      text-align: center;
+      line-height: normal;
+    }
+
+    /* ── HISTORY ISLAND ── */
+    .history-island-img {
+      position: absolute;
+      top: 419px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 386px;
+      height: 325px;
+      display: block;
+      z-index: 3;
+    }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 89px;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    .screen-content {
+      position: relative;
+      width: 402px;
+      height: 1190px;
+    }
+
+    /* ── DEPOSITS ISLAND ── */
+    .deposits-island {
+      position: absolute;
+      top: 760px;
+      left: 8px;
+      width: 386px;
+      height: 144px;
+      background: white;
+      border-radius: 20px;
+      z-index: 3;
+    }
+    .deposits-island-title {
+      position: absolute;
+      top: 24px;
+      left: 0;
+      width: 386px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+    }
+    .deposits-island-title-text {
+      font-size: var(--font-size-title);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-title);
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+      line-height: normal;
+    }
+    .deposits-island-link {
+      font-size: var(--font-size-body);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: var(--text-link);
+    }
+    .deposits-cell {
+      position: absolute;
+      top: 67px;
+      left: 16px;
+      width: 354px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .deposits-cell-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+    .deposits-cell-icon img { display: block; width: 36px; height: 36px; }
+    .deposits-cell-body {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      flex: 1;
+    }
+    .deposits-cell-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .deposits-cell-amount {
+      font-size: 18px;
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: var(--text-primary);
+      white-space: nowrap;
+      line-height: normal;
+    }
+    .deposits-cell-subtitle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-footnote);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: #737373;
+    }
+    .deposits-cell-sep {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .deposits-cell-sep img { display: block; }
+    .deposits-cell-rate {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: var(--font-size-footnote);
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      color: #737373;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+/* ── TAB BAR ── */
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 402px;
+      height: 89px;
+      background: var(--surface-tabbar);
+      border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .tab-bar-glow {
+      position: absolute;
+      left: -110px;
+      top: 20px;
+      width: 260px;
+      height: 140px;
+    }
+    .tab-bar-glow-img {
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 380px;
+      height: 260px;
+    }
+    .tab-bar-glow-img img {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      display: block;
+    }
+    .tab-bar-inner {
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 370px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tab-btn {
+      width: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .tab-btn img {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .tab-label {
+      font-family: var(--font-family-base);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-caption);
+      line-height: 1.2;
+      color: var(--text-tertiary);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .tab-label.active { color: var(--accent-primary); }
+
+    /* ── TRANSFERS ISLAND ── */
+    .transfers-island {
+      position: absolute;
+      top: 912px;
+      left: 8px;
+      width: 386px;
+      height: 263px;
+      background: white;
+      border-radius: 20px;
+      z-index: 3;
+    }
+    .transfers-title {
+      position: absolute;
+      top: 24px;
+      left: 0;
+      width: 386px;
+      padding: 0 16px;
+    }
+    .transfers-title-text {
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-title);
+      font-size: var(--font-size-title);
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+      line-height: normal;
+    }
+    .transfers-field {
+      position: absolute;
+      top: 64px;
+      left: 16px;
+      width: 354px;
+      height: 57px;
+      background: var(--surface-secondary);
+      border-radius: 16px;
+      padding: 10px 8px 6px 16px;
+      display: flex;
+      align-items: center;
+    }
+    .transfers-field-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 40px;
+    }
+    .transfers-field-text {
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      font-size: var(--font-size-body);
+      color: var(--text-primary);
+      white-space: nowrap;
+      line-height: normal;
+    }
+    .transfers-field-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .transfers-spb {
+      width: 24px;
+      height: 24px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .transfers-spb img {
+      display: block;
+      width: 24px;
+      height: 23px;
+      object-fit: cover;
+    }
+    .transfers-arrow-btn {
+      display: block;
+      width: 49px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+    .transfers-options {
+      position: absolute;
+      top: 138px;
+      left: 16px;
+      width: 374px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .transfers-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 62px;
+      flex-shrink: 0;
+    }
+    .transfers-icon-btn {
+      width: 62px;
+      height: 62px;
+      background: var(--surface-secondary);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .transfers-icon-btn img {
+      display: block;
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+    .transfers-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 42px;
+    }
+    .transfers-label span {
+      font-family: var(--font-family-base);
+      font-weight: var(--font-weight-caption);
+      font-size: 12px;
+      color: var(--text-primary);
+      text-align: center;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .transfers-label-overflow {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 64px;
+      white-space: nowrap !important;
+      display: block;
+    }
+
+    /* ── HOME INDICATOR ── */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background: #000;
+      border-radius: 3px;
+      opacity: 0.2;
+      z-index: 11;
+    }
+
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <img src="assets/status-bar.svg" alt="" />
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+  <div class="screen-content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="blob-teal"><img src="assets/blob-teal.svg" alt="" /></div>
+    <div class="blob-mint"><img src="assets/blob-mint.svg" alt="" /></div>
+    <div class="blob-aqua"><img src="assets/blob-aqua.svg" alt="" /></div>
+    <div class="hero-fade"></div>
+  </div>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <div class="nav-avatar">
+      <img src="assets/photo.png" alt="Аватар" />
+    </div>
+    <div class="nav-search">
+      <img src="assets/search-ai.svg" alt="" />
+      <span>Поиск c GigaChat</span>
+    </div>
+    <div class="nav-icons">
+      <img src="assets/chat-icon.svg" alt="" width="36" height="36" />
+      <img src="assets/gigachat-crescent.svg" alt="" width="36" height="36" />
+    </div>
+  </div>
+
+  <!-- BALANCE -->
+  <div class="balance-area">
+    <div class="eye-icon">
+      <img src="assets/eye-slash.svg" alt="" />
+    </div>
+    <div class="balance-sum-row">
+      <div class="balance-sum">
+        <span class="balance-amount">500</span>
+        <span class="balance-currency">₽</span>
+      </div>
+      <img class="balance-chevron" src="assets/chevron1.svg" alt="" />
+    </div>
+  </div>
+
+  <!-- COUNTER PILL -->
+  <div class="counter-pill">
+    <span>14</span>
+    <img src="assets/icon.svg" alt="" />
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-btn qr">
+    <div class="action-inner">
+      <img src="assets/scan-icon.svg" alt="" />
+      <span class="action-label">QR-код</span>
+    </div>
+  </div>
+  <div class="action-btn transfer">
+    <div class="action-inner">
+      <img src="assets/transfer-icon.svg" alt="" />
+      <span class="action-label">Перевести</span>
+    </div>
+  </div>
+  <div class="action-btn settings">
+    <div class="action-inner settings-inner">
+      <img src="assets/setup-icon.svg" alt="" />
+      <span class="action-label">Настроить</span>
+    </div>
+  </div>
+
+  <!-- HISTORY ISLAND -->
+  <img class="history-island-img" src="assets/history.png" alt="" />
+
+<!-- DEPOSITS ISLAND -->
+  <div class="deposits-island">
+    <div class="deposits-island-title">
+      <span class="deposits-island-title-text">Вклады и счета</span>
+      <span class="deposits-island-link">Все</span>
+    </div>
+    <a class="deposits-cell" href="накопительный-счёт.html">
+      <div class="deposits-cell-icon">
+        <img src="assets/deposits-icon.svg" alt="" />
+      </div>
+      <div class="deposits-cell-body">
+        <div class="deposits-cell-info">
+          <span class="deposits-cell-amount">10 000 ₽</span>
+          <div class="deposits-cell-subtitle">
+            <span>Накопительный счет</span>
+            <div class="deposits-cell-sep">
+              <img src="assets/ellipse22.svg" alt="" width="3" height="3" />
+              <span>7052</span>
+            </div>
+          </div>
+        </div>
+        <div class="deposits-cell-rate">
+          <span>12,5</span>
+          <span>%</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- TRANSFERS ISLAND -->
+  <div class="transfers-island">
+    <div class="transfers-title">
+      <span class="transfers-title-text">Переводы</span>
+    </div>
+    <div class="transfers-field">
+      <div class="transfers-field-content">
+        <span class="transfers-field-text">На Сбер или в другой банк</span>
+        <div class="transfers-field-btns">
+          <div class="transfers-spb">
+            <img src="assets/sber-spb.png" alt="" />
+          </div>
+          <img class="transfers-arrow-btn" src="assets/sber-transfers-btn.svg" alt="" />
+        </div>
+      </div>
+    </div>
+    <div class="transfers-options">
+      <div class="transfers-option">
+        <div class="transfers-icon-btn">
+          <img src="assets/sber-transfers-between.svg" alt="" />
+        </div>
+        <div class="transfers-label">
+          <span>Между</span>
+          <span>своими</span>
+        </div>
+      </div>
+      <div class="transfers-option">
+        <div class="transfers-icon-btn">
+          <img src="assets/sber-transfers-abroad.svg" alt="" />
+        </div>
+        <div class="transfers-label">
+          <span>В другую</span>
+          <span>страну</span>
+        </div>
+      </div>
+      <div class="transfers-option">
+        <div class="transfers-icon-btn">
+          <img src="assets/sber-transfers-client.svg" alt="" />
+        </div>
+        <div class="transfers-label">
+          <span>Мария</span>
+          <span class="transfers-label-overflow">Владимировна</span>
+        </div>
+      </div>
+      <div class="transfers-option">
+        <div class="transfers-icon-btn">
+          <img src="assets/sber-ev-icon.svg" alt="" />
+        </div>
+        <div class="transfers-label">
+          <span>Елена</span>
+          <span class="transfers-label-overflow">Владимировна</span>
+        </div>
+      </div>
+      <div class="transfers-option">
+        <div class="transfers-icon-btn">
+          <img src="assets/sber-chat.png" alt="" style="width:24px;height:22px;" />
+        </div>
+        <div class="transfers-label">
+          <span>Чаты</span>
+          <span>и сборы</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /screen-content -->
+  </div><!-- /scroll-area -->
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-bar-glow">
+      <div class="tab-bar-glow-img">
+        <img src="assets/glow.svg" alt="" />
+      </div>
+    </div>
+    <div class="tab-bar-inner">
+      <div class="tab-btn">
+        <img src="assets/icon-main-active.svg" alt="" />
+        <span class="tab-label active">Главный</span>
+      </div>
+      <a class="tab-btn" href="накопления.html">
+        <img src="assets/icon-analytics.svg" alt="" />
+        <span class="tab-label">Накопления</span>
+      </a>
+      <div class="tab-btn">
+        <img src="assets/icon-star.svg" alt="" />
+        <span class="tab-label">Для жизни</span>
+      </div>
+      <div class="tab-btn">
+        <img src="assets/icon-pay.svg" alt="" />
+        <span class="tab-label">Платежи</span>
+      </div>
+      <div class="tab-btn">
+        <img src="assets/icon-wallet.svg" alt="" />
+        <span class="tab-label">Кредиты</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME INDICATOR -->
+  <div class="home-indicator"></div>
+
+</div>
+</body>
+</html>

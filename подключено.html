@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Автонакопление подключено</title>
+  <style>
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB Sans Text.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/sb-sans-text-medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Semibold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    :root { --ff: 'SB Sans Text', -apple-system, sans-serif; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: var(--ff);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-synthesis: none;
+    }
+
+    .phone {
+      position: relative;
+      width: 402px;
+      height: 874px;
+      overflow: hidden;
+      border-radius: 50px;
+      background: #F3F3F3;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+
+    /* ---- Keyframes ---- */
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes checkmark-pop {
+      from { transform: translateX(-50%) scale(0.6); opacity: 0; }
+      to   { transform: translateX(-50%) scale(1);   opacity: 1; }
+    }
+
+    @keyframes slide-up-in {
+      from { transform: translateY(16px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    @keyframes btn-slide-up {
+      from { transform: translateX(-50%) translateY(16px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+    }
+
+    /* ---- Animation classes ---- */
+
+    .phone-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 574px 315px at -32px -18px,
+        #F0FFDE 0%, #F1F6F2 80%, #F3F3F3 100%);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      animation: fade-in 300ms ease-out 0ms both;
+    }
+
+    .anim-checkmark {
+      opacity: 0;
+      animation: checkmark-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both;
+    }
+
+    .anim-card {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation: slide-up-in 300ms ease-out 500ms both;
+    }
+
+    .anim-btn {
+      opacity: 0;
+      animation: btn-slide-up 300ms ease-out 700ms both;
+    }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Background gradient -->
+  <div class="phone-bg"></div>
+
+  <!-- Status bar -->
+  <div style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;z-index:10;">
+    <img src="assets/savings-status-bar.png" alt=""
+      style="position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;mix-blend-mode:multiply;" />
+  </div>
+
+  <!-- Fireworks canvas (replaces static SVG) -->
+  <canvas id="fw-canvas" style="position:absolute;top:0;left:0;pointer-events:none;z-index:2;"></canvas>
+
+  <!-- Card group: white card + title + info rows -->
+  <div class="anim-card">
+
+    <!-- White card -->
+    <div style="position:absolute;top:174px;left:16px;width:371px;height:463px;
+      background:#fff;border-radius:24px;
+      box-shadow:0 4px 24px rgba(0,0,0,0.07);"></div>
+
+    <!-- Title -->
+    <p style="position:absolute;top:327px;left:50%;
+      transform:translate(-50%,-100%);
+      font-family:var(--ff);font-size:18px;font-weight:600;color:#000;
+      letter-spacing:-0.18px;white-space:nowrap;text-align:center;">
+      Автонакопление подключено
+    </p>
+
+    <!-- Info rows -->
+    <div style="position:absolute;top:351px;left:48px;width:307px;
+      display:flex;flex-direction:column;gap:16px;">
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <img src="assets/connect-piggybank.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
+        <p id="firstTransferText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
+          line-height:1.4;width:273px;">Первый перевод будет 24 ноября, 5 000 ₽</p>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;">
+        <img src="assets/connect-chartlineup.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
+        <p id="scheduleText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
+          white-space:nowrap;">Далее – каждое 24-е число</p>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <img src="assets/connect-pausecircle.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
+          line-height:1.4;width:273px;">Поставить на паузу или отключить можно в любой момент</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Checkmark (above card via DOM order) -->
+  <div class="anim-checkmark" style="position:absolute;top:210px;left:50%;z-index:3;">
+    <svg width="100" height="82" viewBox="0 0 100 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ck" x1="8" y1="70" x2="92" y2="8" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#21C17B"/>
+          <stop offset="55%" stop-color="#3DD980"/>
+          <stop offset="100%" stop-color="#7AE519"/>
+        </linearGradient>
+      </defs>
+      <path d="M9 41L36 68L91 9"
+        stroke="url(#ck)" stroke-width="13"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- Button "К накоплениям" -->
+  <a href="накопительный-счёт.html" class="anim-btn"
+    style="text-decoration:none;position:absolute;top:515px;left:50%;
+      width:338px;height:48px;background:#313439;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;padding:10px;z-index:4;">
+    <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#fff;white-space:nowrap;">К накоплениям</p>
+  </a>
+
+  <!-- Button "На главную" -->
+  <a href="index.html" class="anim-btn"
+    style="text-decoration:none;position:absolute;top:571px;left:50%;
+      width:338px;height:48px;background:#F5F5F5;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;padding:10px;z-index:4;">
+    <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">На главную</p>
+  </a>
+
+  <!-- Bottom cards row -->
+  <div style="position:absolute;top:653px;left:16px;width:370px;
+    display:flex;align-items:center;justify-content:space-between;z-index:4;">
+
+    <div style="background:#fff;width:174px;height:64px;border-radius:15px;
+      display:flex;align-items:center;padding:16px 17px 16px 16px;">
+      <div style="display:flex;gap:15px;align-items:center;">
+        <img src="assets/connect-icon-buttons.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Действия</p>
+      </div>
+    </div>
+
+    <div style="background:#fff;width:174px;height:64px;border-radius:15px;
+      display:flex;align-items:center;padding:16px 17px 16px 16px;">
+      <div style="display:flex;gap:15px;align-items:center;">
+        <img src="assets/connect-share.svg" alt=""
+          style="width:28px;height:28px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Поделиться</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Home indicator -->
+  <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:134px;height:5px;background:#000;border-radius:3px;opacity:0.2;z-index:5;"></div>
+
+</div>
+
+<script>
+(function () {
+  var canvas = document.getElementById('fw-canvas');
+  var ctx = canvas.getContext('2d');
+  canvas.width = 402;
+  canvas.height = 874;
+
+  var COLORS = ['#21C17B', '#3DD980', '#7AE519', '#B8F07A', '#F0FFDE', '#ffffff'];
+
+  // 4 bursts in upper part of phone, staggered 330ms apart
+  var BURSTS = [
+    { x: 108, y: 125, t:   0, fired: false },
+    { x: 294, y:  90, t: 330, fired: false },
+    { x: 195, y: 170, t: 660, fired: false },
+    { x:  72, y: 225, t: 990, fired: false },
+  ];
+
+  var particles = [];
+
+  function createBurst(cx, cy) {
+    var count = 42;
+    for (var i = 0; i < count; i++) {
+      var angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.25;
+      var speed = 1.2 + Math.random() * 2.8;
+      particles.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        opacity: 0.9 + Math.random() * 0.1,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        radius: 1.4 + Math.random() * 2.0,
+        gravity: 0.037 + Math.random() * 0.030,
+        drag: 0.985 + Math.random() * 0.01,
+        decay: 0.008 + Math.random() * 0.007,
+      });
+    }
+  }
+
+  var startTime = null;
+
+  function tick(ts) {
+    if (!startTime) startTime = ts;
+    var elapsed = ts - startTime;
+
+    ctx.clearRect(0, 0, 402, 874);
+
+    for (var b = 0; b < BURSTS.length; b++) {
+      if (!BURSTS[b].fired && elapsed >= BURSTS[b].t) {
+        BURSTS[b].fired = true;
+        createBurst(BURSTS[b].x, BURSTS[b].y);
+      }
+    }
+
+    var alive = [];
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      if (p.opacity <= 0.02) continue;
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.opacity -= p.decay;
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+      alive.push(p);
+    }
+    ctx.globalAlpha = 1;
+    particles = alive;
+
+    // Fade canvas out at ~2.5s, fully gone at 3s
+    if (elapsed > 2500) {
+      var t = Math.min(1, (elapsed - 2500) / 500);
+      canvas.style.opacity = String(1 - t);
+    }
+
+    if (elapsed < 3000) {
+      requestAnimationFrame(tick);
+    } else {
+      canvas.style.display = 'none';
+    }
+  }
+
+  setTimeout(function () {
+    requestAnimationFrame(tick);
+  }, 1000);
+})();
+</script>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var amount = params.get('amount');
+  var day    = params.get('day');
+  if (!amount || !day) return;
+
+  var MONTHS = ['января','февраля','марта','апреля','мая','июня',
+                'июля','августа','сентября','октября','ноября','декабря'];
+
+  function fmtAmt(s) {
+    return String(parseInt(s, 10)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  function firstDate(dayParam) {
+    var today = new Date();
+    var td = today.getDate(), tm = today.getMonth(), ty = today.getFullYear();
+    if (dayParam === 'last') {
+      var lastThis = new Date(ty, tm + 1, 0).getDate();
+      if (td < lastThis) return { d: lastThis, m: tm };
+      var nm = tm + 1, ny = ty;
+      if (nm > 11) { nm = 0; ny++; }
+      return { d: new Date(ny, nm + 1, 0).getDate(), m: nm };
+    }
+    var dn = parseInt(dayParam, 10);
+    if (td <= dn) return { d: dn, m: tm };
+    var nm = tm + 1, ny = ty;
+    if (nm > 11) { nm = 0; ny++; }
+    return { d: dn, m: nm };
+  }
+
+  var date   = firstDate(day);
+  var firstEl = document.getElementById('firstTransferText');
+  var schedEl = document.getElementById('scheduleText');
+
+  if (firstEl) {
+    firstEl.textContent = 'Первый перевод будет ' + date.d + ' ' + MONTHS[date.m] + ', ' + fmtAmt(amount) + ' ₽';
+  }
+  if (schedEl) {
+    if (day === 'last') {
+      schedEl.style.whiteSpace = 'normal';
+      schedEl.textContent = 'Далее – каждый последний день месяца';
+    } else {
+      schedEl.textContent = 'Далее – каждое ' + day + '-е число';
+    }
+  }
+})();
+</script>
+</body>
+</html>

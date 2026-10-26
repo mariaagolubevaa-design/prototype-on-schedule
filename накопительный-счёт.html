@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Накопительный счёт</title>
+  <style>
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB Sans Text.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/sb-sans-text-medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Semibold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Display';
+      src: url('fonts/sb-sans-display-semibold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    :root {
+      --ff: 'SB Sans Text', -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: var(--ff);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-synthesis: none;
+    }
+
+    .phone {
+      position: relative;
+      width: 402px;
+      height: 874px;
+      overflow: hidden;
+      border-radius: 50px;
+      background: #f1f1f1;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+
+    #screensWrapper {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    #screensWrapper::-webkit-scrollbar { display: none; }
+
+    .screen-pane {
+      flex-shrink: 0;
+      width: 402px;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      scroll-snap-align: start;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      background: #f1f1f1;
+    }
+    .screen-pane::-webkit-scrollbar { display: none; }
+    #savingsCards::-webkit-scrollbar  { display: none; }
+
+    .pg-dot {
+      height: 3px;
+      border-radius: 99px;
+      background: #000;
+      cursor: pointer;
+      transition: width 200ms ease, opacity 200ms ease, border-radius 200ms ease;
+    }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status bar (закреплён, вне screensWrapper) -->
+  <div style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;z-index:10;background:#f1f1f1;">
+    <img src="assets/savings-status-bar.png" alt=""
+      style="position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;" />
+  </div>
+
+  <!-- Кнопка «Назад» (закреплена) -->
+  <a href="накопления.html"
+    style="position:absolute;top:67px;left:2px;display:block;width:28px;height:28px;line-height:0;z-index:11;">
+    <img src="assets/savings-chevron-left.svg" alt="Назад"
+      style="width:28px;height:28px;max-width:none;" />
+  </a>
+
+  <!-- Точки пагинации (закреплены) -->
+  <div style="position:absolute;top:79px;left:50%;transform:translateX(-50%);height:3px;z-index:11;display:flex;align-items:center;gap:5px;">
+    <div id="sdot0" class="pg-dot" style="width:12px;opacity:1;"></div>
+    <div id="sdot1" class="pg-dot" style="width:3px;opacity:0.25;border-radius:50%;"></div>
+  </div>
+
+  <!-- ===== Горизонтальная обёртка экранов ===== -->
+  <div id="screensWrapper">
+
+    <!-- ===== ЭКРАН 0: Накопительный счёт (пустой) ===== -->
+    <div id="sscreen0" class="screen-pane">
+
+      <!-- Подпись счёта -->
+      <p style="position:absolute;top:141px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        Накопительный счет
+      </p>
+
+      <!-- Сумма "10 000 ₽" -->
+      <div style="position:absolute;top:160px;left:24px;display:flex;gap:7px;align-items:flex-start;line-height:normal;">
+        <span style="font-family:'SB Sans Display',var(--ff);font-size:32px;font-weight:600;color:#000;white-space:nowrap;">10 000</span>
+        <span style="font-family:var(--ff);font-size:32px;font-weight:500;color:#000;width:24px;">₽</span>
+      </div>
+
+      <!-- Бейдж ставки "12,5%" -->
+      <div style="position:absolute;top:160px;left:313px;width:64px;height:36px;
+        background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000;white-space:nowrap;">12,5%</span>
+      </div>
+
+      <!-- Подзаголовок 1 -->
+      <p style="position:absolute;top:223px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        Из них можно перевести 10 000 ₽&nbsp;
+      </p>
+
+      <!-- Подзаголовок 2 -->
+      <p style="position:absolute;top:249px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        Ещё +102,74 ₽ выплатим 22 ноября
+      </p>
+
+      <!-- Карточка «Пополнить» (204×120) -->
+      <div style="position:absolute;top:275px;left:8px;width:204px;height:120px;
+        background:#fff;border-radius:15px;padding:14px 16px 13px 16px;
+        display:flex;flex-direction:column;gap:20px;">
+        <img src="assets/savings-icon-popolnit.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Пополнить</span>
+          <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">с любых карт и счетов</span>
+        </div>
+      </div>
+
+      <!-- Карточка «Перевести» (174×120) -->
+      <div style="position:absolute;top:275px;left:220px;width:174px;height:120px;
+        background:#fff;border-radius:15px;padding:12px 14px 15px 16px;
+        display:flex;flex-direction:column;gap:20px;">
+        <img src="assets/savings-icon-perevesti.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Перевести</span>
+          <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">на карту или счёт</span>
+        </div>
+      </div>
+
+      <!-- Карточка «О счёте» (204×64) -->
+      <div style="position:absolute;top:403px;left:8px;width:204px;height:64px;
+        background:#fff;border-radius:15px;padding:17px 16px 15px 16px;
+        display:flex;align-items:center;gap:15px;">
+        <img src="assets/savings-icon-o-schete.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">О счёте</span>
+      </div>
+
+      <!-- Карточка «Действия» (174×64) -->
+      <div style="position:absolute;top:403px;left:220px;width:174px;height:64px;
+        background:#fff;border-radius:15px;padding:16px 17px 16px 16px;
+        display:flex;align-items:center;gap:15px;">
+        <img src="assets/savings-icon-deystviya.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Действия</span>
+      </div>
+
+      <!-- Заголовок секции -->
+      <div style="position:absolute;top:515px;left:8px;width:386px;
+        display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:var(--ff);font-size:20px;font-weight:600;color:#000;letter-spacing:-0.2px;white-space:nowrap;">Пусть деньги копятся сами</span>
+      </div>
+
+      <!-- Горизонтальный ряд карточек «Пусть копятся сами» — свайп листает карточки -->
+      <div id="savingsCards" style="position:absolute;top:550px;left:0;width:402px;height:148px;
+        overflow-x:auto;overflow-y:hidden;
+        display:flex;flex-direction:row;align-items:flex-start;gap:12px;
+        scroll-snap-type:x mandatory;scroll-padding-left:8px;
+        -webkit-overflow-scrolling:touch;
+        padding-left:8px;padding-right:8px;
+        box-sizing:border-box;
+        scrollbar-width:none;">
+
+        <!-- По расписанию (222×148) -->
+        <a href="по-расписанию.html" style="flex-shrink:0;width:222px;height:148px;
+          background:#fff;border-radius:20px;
+          position:relative;overflow:hidden;
+          scroll-snap-align:start;
+          display:block;text-decoration:none;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;">
+            <img src="assets/savings-illus-calendar.png" alt=""
+              style="position:absolute;left:-22px;top:0;width:100px;height:56px;max-width:none;object-fit:cover;" />
+          </div>
+          <div style="position:absolute;left:16px;top:83px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">По расписанию</span>
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;">выбрать когда и сколько</span>
+          </div>
+        </a>
+
+        <!-- Процент от доходов (222×148) -->
+        <a href="по-расписанию.html#income" style="flex-shrink:0;width:222px;height:148px;
+          background:#fff;border-radius:20px;
+          position:relative;overflow:hidden;
+          scroll-snap-align:start;
+          display:block;text-decoration:none;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;">
+            <img src="assets/savings-illus-wallet.png" alt=""
+              style="position:absolute;left:-44px;top:-15px;width:146px;height:81px;max-width:none;object-fit:cover;" />
+          </div>
+          <div style="position:absolute;left:16px;top:83px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Процент от доходов</span>
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;line-height:1.3;">откладывать с зарплаты<br>или пенсии</span>
+          </div>
+        </a>
+
+        <!-- Процент от расходов (222×148) -->
+        <a href="по-расписанию.html#expenses" style="flex-shrink:0;width:222px;height:148px;
+          background:#fff;border-radius:20px;
+          position:relative;overflow:hidden;
+          scroll-snap-align:start;
+          display:block;text-decoration:none;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;">
+            <img src="assets/savings-illus-purchase.png" alt=""
+              style="position:absolute;left:-38px;top:-16px;width:134px;height:75px;max-width:none;object-fit:cover;" />
+          </div>
+          <div style="position:absolute;left:16px;top:83px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Процент от расходов</span>
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;">копить с каждой покупки</span>
+          </div>
+        </a>
+
+        <!-- Округление с покупок (222×148) -->
+        <div style="flex-shrink:0;width:222px;height:148px;
+          background:#fff;border-radius:20px;
+          position:relative;overflow:hidden;
+          scroll-snap-align:start;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;">
+            <img src="assets/savings-illus-recept.png" alt=""
+              style="position:absolute;left:-34px;top:-10px;width:130px;height:73px;max-width:none;object-fit:cover;" />
+          </div>
+          <div style="position:absolute;left:16px;top:83px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Округление покупок</span>
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;">переводить разницу на счёт</span>
+          </div>
+        </div>
+
+        <!-- 52 недели (222×148) -->
+        <a href="по-расписанию.html#weeks" style="flex-shrink:0;width:222px;height:148px;
+          background:#fff;border-radius:20px;
+          position:relative;overflow:hidden;
+          scroll-snap-align:start;
+          display:block;text-decoration:none;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;">
+            <img src="assets/savings-illus-challenge.png" alt=""
+              style="position:absolute;left:-33px;top:-4px;width:120px;height:67px;max-width:none;object-fit:cover;transform:scaleX(-1);" />
+          </div>
+          <div style="position:absolute;left:16px;top:83px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">52 недели</span>
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;line-height:1.3;">откладывать каждую неделю<br>чуть больше прошлой</span>
+          </div>
+        </a>
+
+      </div><!-- /#savingsCards -->
+
+      <!-- Остров «Надбавки по счёту» (386×262) -->
+      <div style="position:absolute;top:767px;left:8px;width:386px;height:262px;
+        background:#fff;border-radius:20px;">
+
+        <div style="position:absolute;top:32px;left:0;width:386px;display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:0 16px;">
+            <span style="font-family:var(--ff);font-size:20px;font-weight:600;color:#000;letter-spacing:-0.2px;white-space:nowrap;">Надбавки по счёту</span>
+          </div>
+          <div style="padding-left:17px;">
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">Базовая ставка – 6,5%&nbsp;</span>
+          </div>
+        </div>
+
+        <!-- Промо +6% -->
+        <div style="position:absolute;top:96px;left:16px;width:235px;height:66px;
+          background:#e0ffe9;border-radius:16px;
+          padding:15px 1px 15px 18px;
+          display:flex;align-items:center;">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <img src="assets/savings-icon-gift.svg" alt=""
+              style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">+6%</span>
+              <span style="font-family:var(--ff);font-size:11.7px;font-weight:400;color:#737373;white-space:nowrap;">за первое открытие счёта</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопка «Подробнее» -->
+        <div style="position:absolute;top:197px;left:16px;width:354px;height:48px;
+          background:#f5f5f5;border-radius:16px;
+          display:flex;align-items:center;justify-content:center;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Подробнее</span>
+        </div>
+
+      </div>
+
+      <!-- Спейсер для вертикального скролла -->
+      <div style="height:1075px;pointer-events:none;"></div>
+
+    </div><!-- /sscreen0 -->
+
+    <!-- ===== ЭКРАН 1: На машину (подключено, заполнено) ===== -->
+    <div id="sscreen1" class="screen-pane">
+
+      <!-- Подпись счёта -->
+      <p style="position:absolute;top:141px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        На машину
+      </p>
+
+      <!-- Сумма "50 000 ₽" -->
+      <div style="position:absolute;top:160px;left:24px;display:flex;gap:7px;align-items:flex-start;line-height:normal;">
+        <span style="font-family:'SB Sans Display',var(--ff);font-size:32px;font-weight:600;color:#000;white-space:nowrap;">50 000</span>
+        <span style="font-family:var(--ff);font-size:32px;font-weight:500;color:#000;width:24px;">₽</span>
+      </div>
+
+      <!-- Бейдж ставки "12,5%" -->
+      <div style="position:absolute;top:160px;left:313px;width:64px;height:36px;
+        background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000;white-space:nowrap;">12,5%</span>
+      </div>
+
+      <!-- Подзаголовок 1 -->
+      <p style="position:absolute;top:223px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        Из них можно перевести 50 000 ₽&nbsp;
+      </p>
+
+      <!-- Подзаголовок 2 -->
+      <p style="position:absolute;top:249px;left:24px;transform:translateY(-100%);
+        font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">
+        Ещё +520,83 ₽ выплатим 21 ноября
+      </p>
+
+      <!-- Карточка «Пополнить» (204×120) -->
+      <div style="position:absolute;top:275px;left:8px;width:204px;height:120px;
+        background:#fff;border-radius:15px;padding:14px 16px 13px 16px;
+        display:flex;flex-direction:column;gap:20px;">
+        <img src="assets/savings-icon-popolnit.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Пополнить</span>
+          <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">с любых карт и счетов</span>
+        </div>
+      </div>
+
+      <!-- Карточка «Перевести» (174×120) -->
+      <div style="position:absolute;top:275px;left:220px;width:174px;height:120px;
+        background:#fff;border-radius:15px;padding:12px 14px 15px 16px;
+        display:flex;flex-direction:column;gap:20px;">
+        <img src="assets/savings-icon-perevesti.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Перевести</span>
+          <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">на карту или счёт</span>
+        </div>
+      </div>
+
+      <!-- Карточка «О счёте» (204×64) -->
+      <div style="position:absolute;top:403px;left:8px;width:204px;height:64px;
+        background:#fff;border-radius:15px;padding:17px 16px 15px 16px;
+        display:flex;align-items:center;gap:15px;">
+        <img src="assets/savings-icon-o-schete.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">О счёте</span>
+      </div>
+
+      <!-- Карточка «Действия» (174×64) -->
+      <div style="position:absolute;top:403px;left:220px;width:174px;height:64px;
+        background:#fff;border-radius:15px;padding:16px 17px 16px 16px;
+        display:flex;align-items:center;gap:15px;">
+        <img src="assets/savings-icon-deystviya.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Действия</span>
+      </div>
+
+      <!-- Заголовок секции -->
+      <div style="position:absolute;top:515px;left:8px;width:386px;display:flex;align-items:center;">
+        <span style="font-family:var(--ff);font-size:20px;font-weight:600;color:#000;letter-spacing:-0.2px;white-space:nowrap;">Пусть деньги копятся сами</span>
+      </div>
+
+      <!-- Баннер «По расписанию» (подключён) -->
+      <a href="по-расписанию.html" style="position:absolute;top:550px;left:8px;width:386px;height:148px;
+        background:#fff;border-radius:20px;
+        display:block;text-decoration:none;overflow:hidden;">
+        <!-- Иллюстрация календаря (правая часть) -->
+        <img src="assets/savings-illus-calendar-filled.png" alt=""
+          style="position:absolute;left:190px;top:9px;width:226.676px;height:126.509px;max-width:none;object-fit:cover;pointer-events:none;" />
+        <!-- Заголовок + подзаголовок -->
+        <div style="position:absolute;left:16px;top:16px;display:flex;flex-direction:column;gap:2px;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">По расписанию</span>
+          <span style="font-family:var(--ff);font-size:11px;font-weight:500;color:#737373;white-space:nowrap;line-height:1.2;">каждое 22-е, 10 000 ₽</span>
+        </div>
+        <!-- Иконка карандаша -->
+        <img src="assets/52weeks-pencil.svg" alt=""
+          style="position:absolute;left:157px;top:18px;width:14px;height:14px;max-width:none;display:block;" />
+        <!-- Сумма -->
+        <p style="position:absolute;left:17px;top:96px;
+          font-family:var(--ff);font-size:20px;font-weight:600;color:#000;
+          white-space:nowrap;letter-spacing:-0.2px;">40 000 ₽</p>
+        <!-- Подпись -->
+        <p style="position:absolute;left:17px;top:119px;
+          font-family:var(--ff);font-size:11px;font-weight:500;color:#737373;
+          white-space:nowrap;line-height:1.2;">с автополнений, из них 2200 с %</p>
+      </a>
+
+      <!-- Остров «Надбавки по счёту» (386×262, top:719px по макету) -->
+      <div style="position:absolute;top:719px;left:8px;width:386px;height:262px;
+        background:#fff;border-radius:20px;">
+
+        <div style="position:absolute;top:32px;left:0;width:386px;display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:0 16px;">
+            <span style="font-family:var(--ff);font-size:20px;font-weight:600;color:#000;letter-spacing:-0.2px;white-space:nowrap;">Надбавки по счёту</span>
+          </div>
+          <div style="padding-left:17px;">
+            <span style="font-family:var(--ff);font-size:13px;font-weight:500;color:#737373;white-space:nowrap;">Базовая ставка – 6,5%&nbsp;</span>
+          </div>
+        </div>
+
+        <!-- Промо +6% -->
+        <div style="position:absolute;top:96px;left:16px;width:235px;height:66px;
+          background:#e0ffe9;border-radius:16px;
+          padding:15px 1px 15px 18px;
+          display:flex;align-items:center;">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <img src="assets/savings-icon-gift.svg" alt=""
+              style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">+6%</span>
+              <span style="font-family:var(--ff);font-size:11.7px;font-weight:400;color:#737373;white-space:nowrap;">за первое открытие счёта</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопка «Подробнее» -->
+        <div style="position:absolute;top:197px;left:16px;width:354px;height:48px;
+          background:#f5f5f5;border-radius:16px;
+          display:flex;align-items:center;justify-content:center;">
+          <span style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Подробнее</span>
+        </div>
+
+      </div>
+
+      <!-- Спейсер для вертикального скролла -->
+      <div style="height:1040px;pointer-events:none;"></div>
+
+    </div><!-- /sscreen1 -->
+
+  </div><!-- /#screensWrapper -->
+
+  <!-- Home indicator -->
+  <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:134px;height:5px;background:#000;border-radius:3px;opacity:0.2;z-index:10;"></div>
+
+</div>
+
+<script>
+  (function () {
+    var wrapper       = document.getElementById('screensWrapper');
+    var sdot0         = document.getElementById('sdot0');
+    var sdot1         = document.getElementById('sdot1');
+    var currentScreen = 0;
+    var wasDragged    = false;
+
+    function setScreenIndicator(idx) {
+      currentScreen = idx;
+      [sdot0, sdot1].forEach(function (d) {
+        d.style.width        = '3px';
+        d.style.opacity      = '0.25';
+        d.style.borderRadius = '50%';
+      });
+      var active = [sdot0, sdot1][idx];
+      if (active) {
+        active.style.width        = '12px';
+        active.style.opacity      = '1';
+        active.style.borderRadius = '99px';
+      }
+    }
+
+    wrapper.scrollLeft = 0;
+    setScreenIndicator(0);
+
+    if (new URLSearchParams(location.search).get('account') === '1') {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          wrapper.scrollTo({ left: 402, behavior: 'smooth' });
+        });
+      });
+    }
+
+    wrapper.addEventListener('scroll', function () {
+      var idx = Math.round(wrapper.scrollLeft / 402);
+      if (idx !== currentScreen) setScreenIndicator(idx);
+    }, { passive: true });
+
+    sdot0.addEventListener('click', function () {
+      wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+    });
+    sdot1.addEventListener('click', function () {
+      wrapper.scrollTo({ left: 402, behavior: 'smooth' });
+    });
+
+    /* Мышиный drag для десктопного превью */
+    var dragStartX     = null;
+    var dragScrollLeft = 0;
+
+    wrapper.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      /* Не захватываем drag, начавшийся внутри горизонтальных рядов карточек */
+      if (e.target.closest && (
+        e.target.closest('#savingsCards') ||
+        e.target.closest('#savingsCards2')
+      )) return;
+      dragStartX     = e.clientX;
+      dragScrollLeft = wrapper.scrollLeft;
+      wasDragged     = false;
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (dragStartX === null) return;
+      var dx = e.clientX - dragStartX;
+      if (Math.abs(dx) > 5) {
+        wasDragged = true;
+        wrapper.scrollLeft = dragScrollLeft - dx;
+      }
+    });
+
+    document.addEventListener('mouseup', function () {
+      dragStartX = null;
+      setTimeout(function () { wasDragged = false; }, 0);
+    });
+
+  })();
+</script>
+</body>
+</html>

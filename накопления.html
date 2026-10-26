@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СберБанк — Накопления</title>
+  <style>
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB Sans Text.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/sb-sans-text-medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Semibold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SB Sans Text';
+      src: url('fonts/SB-Sans-Text-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    :root {
+      --surface-tabbar: #fcfcfc;
+      --text-tertiary: #a7a7a7;
+      --accent-primary: #148f2b;
+      --font-family-base: 'SB Sans Text', -apple-system, sans-serif;
+      --font-size-caption: 11px;
+      --font-weight-caption: 500;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: var(--font-family-base);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-synthesis: none;
+    }
+
+    .phone {
+      position: relative;
+      width: 402px;
+      height: 874px;
+      overflow: hidden;
+      border-radius: 50px;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 89px;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ── SCREEN CONTENT ── */
+    .screen-content {
+      position: relative;
+      width: 402px;
+      height: 1420px;
+      background: #f1f1f1;
+    }
+
+    /* Top image strip: node 112:6557, clips to 565-785px region of the image */
+    .img-top-wrap {
+      position: absolute;
+      top: 565px;
+      left: 0;
+      width: 402px;
+      height: 220px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .img-top-wrap img {
+      position: absolute;
+      top: -255.91%;
+      left: -0.03%;
+      width: 100.06%;
+      height: 396.36%;
+      max-width: none;
+    }
+
+    /* Bottom image block: node 112:6558, h=635px, top=785px */
+    .img-bottom-wrap {
+      position: absolute;
+      top: 785px;
+      left: 0;
+      width: 402px;
+      height: 635px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .img-bottom-wrap img {
+      position: absolute;
+      top: -23.31%;
+      left: -0.03%;
+      width: 100.06%;
+      height: 137.32%;
+      max-width: none;
+    }
+
+    /* ── TAB BAR ── */
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 402px;
+      height: 89px;
+      background: var(--surface-tabbar);
+      border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .tab-bar-glow {
+      position: absolute;
+      left: -110px;
+      top: 20px;
+      width: 260px;
+      height: 140px;
+    }
+    .tab-bar-glow-img {
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 380px;
+      height: 260px;
+    }
+    .tab-bar-glow-img img {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      display: block;
+    }
+    .tab-bar-inner {
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 370px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tab-btn {
+      width: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .tab-btn img {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .tab-label {
+      font-family: var(--font-family-base);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-caption);
+      line-height: 1.2;
+      color: var(--text-tertiary);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .tab-label.active {
+      color: var(--accent-primary);
+    }
+
+    /* ── HOME INDICATOR ── */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background: #000;
+      border-radius: 3px;
+      opacity: 0.2;
+      z-index: 11;
+    }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Hero gradient thin strip for status bar (fixed, keeps green behind status-bar icons when scrolled) -->
+  <div style="position:absolute;top:0;left:0;width:402px;height:62px;z-index:9;pointer-events:none;background:radial-gradient(ellipse 628.5px 339.45px at -11.6px 16.17px, rgba(163,205,192,1) 0%, rgba(179,213,202,1) 35%, rgba(236,240,239,1) 70%, rgba(241,241,241,1) 100%);"></div>
+
+  <!-- Status bar (закреплён, вне scroll-area) — фон убран, PNG с иконками поверх градиента -->
+  <div style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;z-index:10;">
+    <img src="assets/savings-status-bar.png" alt=""
+      style="position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;" />
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="scroll-area">
+    <div class="screen-content">
+
+      <!-- Hero gradient 366px (node 112:6215) — scrolls with content -->
+      <div style="position:absolute;top:0;left:0;width:402px;height:366px;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse 628.5px 339.45px at -11.6px 16.17px, rgba(163,205,192,1) 0%, rgba(179,213,202,1) 35%, rgba(236,240,239,1) 70%, rgba(241,241,241,1) 100%);"></div>
+
+      <!-- NAVIGATION BAR (node 112:6244, top:62px) -->
+      <div style="position:absolute;top:62px;left:0;width:402px;height:42px;display:flex;align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;">
+        <!-- Avatar (42×42, rounded-12) -->
+        <div style="position:relative;width:42px;height:42px;flex-shrink:0;border-radius:12px;overflow:hidden;">
+          <img src="assets/photo.png" alt="" style="position:absolute;width:100%;height:133.33%;top:-9.18%;left:0;max-width:none;" />
+        </div>
+        <!-- Search field -->
+        <div style="background:rgba(0,0,0,0.04);border-radius:12px;height:42px;width:220px;display:flex;align-items:center;padding:6px;box-sizing:border-box;flex-shrink:0;gap:2px;">
+          <img src="assets/search-ai.svg" alt="" style="width:28px;height:28px;flex-shrink:0;" />
+          <span style="font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:rgba(0,0,0,0.55);white-space:nowrap;line-height:normal;">Поиск c GigaChat</span>
+        </div>
+        <!-- Chat + GigaChat icons -->
+        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+          <img src="assets/chat-icon.svg" alt="" style="width:36px;height:36px;flex-shrink:0;" />
+          <!-- GigaChat dark (moon) icon with mask -->
+          <div style="position:relative;width:36px;height:36px;flex-shrink:0;">
+            <div style="position:absolute;width:42px;height:45px;top:-8px;left:-5px;
+              -webkit-mask-image:url('assets/ellipse18.png');mask-image:url('assets/ellipse18.png');
+              -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+              -webkit-mask-position:4px 8px;mask-position:4px 8px;
+              -webkit-mask-size:36px 36px;mask-size:36px 36px;">
+              <img src="assets/ellipse19.svg" alt="" style="width:100%;height:100%;display:block;max-width:none;" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- "Всего средств" label (bottom edge at top:153px) -->
+      <div style="position:absolute;top:153px;left:16px;transform:translateY(-100%);font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:1;pointer-events:none;">Всего средств</div>
+
+      <!-- Amount row (top:164px) -->
+      <div style="position:absolute;top:164px;left:16px;display:flex;align-items:center;gap:8px;">
+        <div style="font-family:'SB Sans Text',sans-serif;font-size:24px;font-weight:600;color:black;letter-spacing:-0.24px;white-space:pre;line-height:normal;">60 500 <span style="font-weight:500;">₽</span>  </div>
+        <img src="assets/chevron1.svg" alt="" style="width:28px;height:28px;flex-shrink:0;" />
+      </div>
+
+      <!-- Eye + More icons (top:162px, left:316px) -->
+      <div style="position:absolute;top:162px;left:316px;display:flex;align-items:center;gap:8px;">
+        <div style="position:relative;width:32px;height:32px;overflow:hidden;flex-shrink:0;">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:16px;display:flex;align-items:center;justify-content:center;">
+            <img src="assets/eye-slash.svg" alt="" style="width:100%;height:100%;display:block;" />
+          </div>
+        </div>
+        <div style="position:relative;width:32px;height:32px;overflow:hidden;flex-shrink:0;">
+          <img src="assets/icon.svg" alt="" style="position:absolute;left:8px;top:14px;width:16px;height:4px;display:block;" />
+        </div>
+      </div>
+
+      <!-- CARD 1: Ещё поступления в ноябре (top:209px, left:16px) -->
+      <div style="position:absolute;top:209px;left:16px;width:180px;height:110px;">
+        <div style="position:absolute;inset:0;background:rgba(255,255,255,0.45);border-radius:18px;"></div>
+        <div style="position:absolute;top:44px;left:12px;transform:translateY(-100%);font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;line-height:normal;">
+          <div>Ещё поступления</div>
+          <div>в ноябре</div>
+        </div>
+        <div style="position:absolute;top:75px;left:12px;font-family:'SB Sans Text',sans-serif;font-size:20px;font-weight:500;color:black;white-space:nowrap;line-height:normal;">50.80 ₽ </div>
+      </div>
+
+      <!-- CARD 2: Пополните счёт (top:209px, left:206px) -->
+      <div style="position:absolute;top:209px;left:206px;width:180px;height:110px;">
+        <div style="position:absolute;inset:0;background:rgba(255,255,255,0.45);border-radius:18px;"></div>
+        <div style="position:absolute;top:44px;left:12px;transform:translateY(-100%);font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;line-height:normal;">
+          <div>Пополните счёт</div>
+          <div>и получайте доход</div>
+        </div>
+        <span style="position:absolute;top:98px;left:12px;transform:translateY(-100%);font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#0d8523;line-height:normal;white-space:nowrap;">Пополнить</span>
+      </div>
+
+      <!-- "ВКЛАДЫ И СЧЕТА" ISLAND (node 112:6400, top:337px, left:8px, 386×220px) -->
+      <div style="position:absolute;top:337px;left:8px;width:386px;height:220px;">
+        <div style="position:absolute;inset:0;background:white;border-radius:20px;"></div>
+
+        <!-- Title (top:24px, px:16px) -->
+        <div style="position:absolute;top:24px;left:0;width:386px;padding:0 16px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span style="font-family:'SB Sans Text',sans-serif;font-size:20px;font-weight:600;color:black;letter-spacing:-0.2px;white-space:nowrap;line-height:normal;">Вклады и счета</span>
+            <img src="assets/chevron.svg" alt="" style="width:16px;height:16px;flex-shrink:0;" />
+          </div>
+        </div>
+
+        <!-- Plus button (top:16px, left:346px within island) -->
+        <div style="position:absolute;top:16px;left:346px;width:24px;height:24px;">
+          <div style="position:absolute;inset:0;background:#f5f5f5;border-radius:8px;"></div>
+          <img src="assets/plus.svg" alt="" style="position:absolute;top:4px;left:4px;width:16px;height:16px;" />
+        </div>
+
+        <!-- List (top:67px, left:8px within island) -->
+        <div style="position:absolute;top:67px;left:8px;width:362px;display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Row 1: Накопительный счёт (LINK) -->
+          <a href="накопительный-счёт.html" style="display:flex;align-items:flex-start;justify-content:space-between;padding-top:2px;text-decoration:none;cursor:pointer;">
+            <div style="background:#f5f5f5;border-radius:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <img src="assets/save-mint-icon.svg" alt="" style="width:24px;height:24px;" />
+            </div>
+            <div style="width:302px;padding-top:2px;display:flex;flex:1;">
+              <div style="flex:1;padding-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;margin-left:16px;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="font-family:'SB Sans Text',sans-serif;font-size:20px;font-weight:500;color:black;letter-spacing:-0.2px;white-space:nowrap;line-height:normal;">10 000 ₽ </div>
+                  <div style="display:flex;align-items:center;gap:4px;">
+                    <span style="font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;">Накопительный счет</span>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <img src="assets/ellipse22.svg" alt="" style="width:3px;height:3px;flex-shrink:0;" />
+                      <span style="font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;">7052</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:3px;font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;flex-shrink:0;"><span>12,5</span><span>%</span></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Row 2: На машину -->
+          <a href="накопительный-счёт.html?account=1" style="display:flex;align-items:flex-start;justify-content:space-between;padding-top:2px;cursor:pointer;text-decoration:none;color:inherit;">
+            <div style="background:#f5f5f5;border-radius:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <img src="assets/save-mint-icon.svg" alt="" style="width:24px;height:24px;" />
+            </div>
+            <div style="width:302px;padding-top:2px;display:flex;flex:1;">
+              <div style="flex:1;padding-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;margin-left:16px;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="font-family:'SB Sans Text',sans-serif;font-size:20px;font-weight:500;color:black;white-space:nowrap;line-height:normal;">50 000 ₽ </div>
+                  <div style="display:flex;align-items:center;gap:4px;">
+                    <span style="font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;">На машину</span>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                      <img src="assets/ellipse22.svg" alt="" style="width:3px;height:3px;flex-shrink:0;" />
+                      <span style="font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;">9169</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:3px;font-family:'SB Sans Text',sans-serif;font-size:13px;font-weight:500;color:#737373;white-space:nowrap;line-height:normal;flex-shrink:0;"><span>12,5</span><span>%</span></div>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Background strip image (node 112:6557, top:565px) — replaces old img-top-wrap region -->
+      <div class="img-top-wrap">
+        <img src="assets/savings-top.png" alt="" />
+      </div>
+
+      <!-- Bottom image (node 112:6558, top:785px) -->
+      <div class="img-bottom-wrap">
+        <img src="assets/savings-bottom.png" alt="" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-bar-glow">
+      <div class="tab-bar-glow-img">
+        <img src="assets/glow.svg" alt="" />
+      </div>
+    </div>
+    <div class="tab-bar-inner">
+      <a class="tab-btn" href="index.html">
+        <img src="assets/icon-main.svg" alt="" />
+        <span class="tab-label">Главный</span>
+      </a>
+      <div class="tab-btn">
+        <img src="assets/icon-analytics-active.svg" alt="" />
+        <span class="tab-label active">Накопления</span>
+      </div>
+      <div class="tab-btn">
+        <img src="assets/icon-star.svg" alt="" />
+        <span class="tab-label">Для жизни</span>
+      </div>
+      <div class="tab-btn">
+        <img src="assets/icon-pay.svg" alt="" />
+        <span class="tab-label">Платежи</span>
+      </div>
+      <div class="tab-btn">
+        <img src="assets/icon-wallet.svg" alt="" />
+        <span class="tab-label">Кредиты</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME INDICATOR -->
+  <div class="home-indicator"></div>
+
+</div>
+</body>
+</html>
