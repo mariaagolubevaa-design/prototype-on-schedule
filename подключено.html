@@ -103,6 +103,45 @@
       opacity: 0;
       animation: btn-slide-up 300ms ease-out 700ms both;
     }
+
+    .anim-btn-pair {
+      opacity: 0;
+      animation: slide-up-in 300ms ease-out 700ms both;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      border-radius: 10px;
+      background: #CCCCCC;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      flex-shrink: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: background 200ms ease;
+    }
+    .toggle-switch.is-on {
+      background: #148F2B;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: -1px -2px 5px rgba(115, 115, 115, 0.3);
+      transition: left 200ms ease;
+    }
+    .toggle-switch.is-on::after {
+      left: 22px;
+    }
   </style>
 </head>
 <body>
@@ -124,7 +163,7 @@
   <div class="anim-card">
 
     <!-- White card -->
-    <div style="position:absolute;top:174px;left:16px;width:371px;height:463px;
+    <div style="position:absolute;top:174px;left:16px;width:371px;height:485px;
       background:#fff;border-radius:24px;
       box-shadow:0 4px 24px rgba(0,0,0,0.07);"></div>
 
@@ -143,24 +182,32 @@
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <img src="assets/connect-piggybank.svg" alt=""
           style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
-        <p id="firstTransferText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
-          line-height:1.4;width:273px;">Первый перевод будет 24 ноября, 5 000 ₽</p>
+        <p id="firstTransferText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#4d4d4d;
+          line-height:1.4;width:273px;">Первое пополнение будет 24 ноября, 5 000 ₽</p>
       </div>
 
       <div style="display:flex;gap:12px;align-items:center;">
-        <img src="assets/connect-chartlineup.svg" alt=""
+        <img src="assets/connect-calendarcheck.svg" alt=""
           style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
-        <p id="scheduleText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
+        <p id="scheduleText" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#4d4d4d;
           white-space:nowrap;">Далее – каждое 24-е число</p>
       </div>
 
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <img src="assets/connect-pausecircle.svg" alt=""
           style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
-        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#4d4d4d;
           line-height:1.4;width:273px;">Поставить на паузу или отключить можно в любой момент</p>
       </div>
 
+    </div>
+
+    <!-- Notification toggle -->
+    <div style="position:absolute;top:507px;left:50%;transform:translateX(-50%);
+      width:338px;height:48px;background:#F5F5F5;border-radius:16px;
+      display:flex;align-items:center;justify-content:space-between;padding:10px 16px;">
+      <p style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000;">Напоминать за день до пополнения</p>
+      <button class="toggle-switch is-on" onclick="this.classList.toggle('is-on')"></button>
     </div>
   </div>
 
@@ -180,24 +227,42 @@
     </svg>
   </div>
 
-  <!-- Button "К накоплениям" -->
+  <!-- Button "В накопления" -->
   <a href="накопительный-счёт.html" class="anim-btn"
-    style="text-decoration:none;position:absolute;top:515px;left:50%;
+    style="text-decoration:none;position:absolute;top:587px;left:50%;
       width:338px;height:48px;background:#313439;border-radius:16px;
       display:flex;align-items:center;justify-content:center;padding:10px;z-index:4;">
-    <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#fff;white-space:nowrap;">К накоплениям</p>
+    <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#fff;white-space:nowrap;">В накопления</p>
   </a>
 
-  <!-- Button "На главную" -->
-  <a href="index.html" class="anim-btn"
-    style="text-decoration:none;position:absolute;top:571px;left:50%;
-      width:338px;height:48px;background:#F5F5F5;border-radius:16px;
-      display:flex;align-items:center;justify-content:center;padding:10px;z-index:4;">
-    <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">На главную</p>
-  </a>
+  <!-- Buttons: Изменить + Создать новое -->
+  <div class="anim-btn-pair" style="position:absolute;top:683px;left:16px;width:370px;
+    display:flex;align-items:center;justify-content:space-between;z-index:4;">
+
+    <div style="background:#fff;width:180px;height:76px;border-radius:16px;
+      display:flex;align-items:center;">
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+        justify-content:center;padding:0 16px;">
+        <img src="assets/connect-pencil.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Изменить</p>
+      </div>
+    </div>
+
+    <div style="background:#fff;width:180px;height:76px;border-radius:16px;
+      display:flex;align-items:center;">
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+        justify-content:center;padding:0 16px;">
+        <img src="assets/connect-icon-buttons2.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Создать новое</p>
+      </div>
+    </div>
+
+  </div>
 
   <!-- Bottom cards row -->
-  <div style="position:absolute;top:653px;left:16px;width:370px;
+  <div style="position:absolute;top:703px;left:16px;width:370px;
     display:flex;align-items:center;justify-content:space-between;z-index:4;">
 
     <div style="background:#fff;width:174px;height:64px;border-radius:15px;
@@ -354,7 +419,7 @@
   var schedEl = document.getElementById('scheduleText');
 
   if (firstEl) {
-    firstEl.textContent = 'Первый перевод будет ' + date.d + ' ' + MONTHS[date.m] + ', ' + fmtAmt(amount) + ' ₽';
+    firstEl.textContent = 'Первое пополнение будет ' + date.d + ' ' + MONTHS[date.m] + ', ' + fmtAmt(amount) + ' ₽';
   }
   if (schedEl) {
     if (day === 'last') {
