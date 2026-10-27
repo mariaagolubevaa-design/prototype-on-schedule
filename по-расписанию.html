@@ -296,7 +296,15 @@
         </div>
       </div>
 
-      <div id="freqTabs" style="position:absolute;top:650px;left:0;width:402px;height:38px;
+      <!-- Hint: if not enough money, skip replenishment -->
+      <div style="position:absolute;top:642px;left:16px;width:370px;
+        display:flex;gap:8px;align-items:center;">
+        <img src="assets/shield-check.svg" alt=""
+          style="width:16px;height:16px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000000;white-space:nowrap;">Если денег не хватит – пропустим пополнение</p>
+      </div>
+
+      <div id="freqTabs" style="position:absolute;top:678px;left:0;width:402px;height:38px;
         overflow-x:auto;overflow-y:hidden;
         display:flex;gap:8px;align-items:center;
         padding-left:16px;padding-right:16px;
@@ -312,7 +320,7 @@
         </div>
       </div>
 
-      <div style="position:absolute;top:704px;left:16px;width:370px;
+      <div style="position:absolute;top:732px;left:16px;width:370px;
         display:flex;flex-direction:column;gap:4px;">
         <div id="amountCell" style="background:#fff;border-radius:16px;padding:8px 16px;
           display:flex;flex-direction:column;gap:4px;cursor:pointer;">
@@ -332,7 +340,7 @@
         </div>
       </div>
 
-      <div id="dateTrigger" style="position:absolute;top:806px;left:16px;width:370px;height:54px;
+      <div id="dateTrigger" style="position:absolute;top:834px;left:16px;width:370px;height:54px;
         background:#fff;border-radius:12px;padding:7px 16px 8px 16px;
         display:flex;align-items:center;cursor:pointer;">
         <div style="flex:1;display:flex;align-items:center;justify-content:space-between;">
