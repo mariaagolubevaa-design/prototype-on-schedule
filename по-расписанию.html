@@ -257,7 +257,19 @@
           style="position:absolute;height:100%;left:-40.03%;top:0;width:181.17%;max-width:none;display:block;" />
       </div>
 
-      <div style="position:absolute;top:437px;left:50%;transform:translateX(-50%);
+      <!-- GigaChat suggestion block -->
+      <div id="gcBlockTrigger" style="position:absolute;top:437px;left:16px;width:370px;height:54px;
+        border-radius:20px;border:1px solid rgba(0,0,0,0.04);overflow:hidden;cursor:pointer;
+        background:linear-gradient(90deg,rgb(244,244,245) 0%,rgb(240,239,242) 10%,rgb(230,224,234) 30%,rgb(220,211,228) 50%,rgb(217,221,239) 70%,rgb(214,230,246) 88%,rgb(212,235,253) 100%);
+        display:flex;align-items:center;gap:12px;padding:0 16px 0 20px;">
+        <img src="assets/gigachat-crescent.svg" alt=""
+          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <p style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000;flex:1;white-space:nowrap;">AI поможет рассчитать</p>
+        <img src="assets/schedule-chevron-right.svg" alt=""
+          style="width:18px;height:18px;flex-shrink:0;max-width:none;" />
+      </div>
+
+      <div style="position:absolute;top:507px;left:50%;transform:translateX(-50%);
         width:370px;background:#fff;border-radius:16px;overflow:hidden;">
         <div id="fromTrigger" style="display:flex;gap:12px;height:63px;align-items:center;padding:0 16px;cursor:pointer;">
           <img src="assets/schedule-icon-transfer.svg" alt=""
@@ -284,7 +296,7 @@
         </div>
       </div>
 
-      <div id="freqTabs" style="position:absolute;top:580px;left:0;width:402px;height:38px;
+      <div id="freqTabs" style="position:absolute;top:650px;left:0;width:402px;height:38px;
         overflow-x:auto;overflow-y:hidden;
         display:flex;gap:8px;align-items:center;
         padding-left:16px;padding-right:16px;
@@ -300,7 +312,7 @@
         </div>
       </div>
 
-      <div style="position:absolute;top:634px;left:16px;width:370px;
+      <div style="position:absolute;top:704px;left:16px;width:370px;
         display:flex;flex-direction:column;gap:4px;">
         <div id="amountCell" style="background:#fff;border-radius:16px;padding:8px 16px;
           display:flex;flex-direction:column;gap:4px;cursor:pointer;">
@@ -320,7 +332,7 @@
         </div>
       </div>
 
-      <div id="dateTrigger" style="position:absolute;top:736px;left:16px;width:370px;height:54px;
+      <div id="dateTrigger" style="position:absolute;top:806px;left:16px;width:370px;height:54px;
         background:#fff;border-radius:12px;padding:7px 16px 8px 16px;
         display:flex;align-items:center;cursor:pointer;">
         <div style="flex:1;display:flex;align-items:center;justify-content:space-between;">
@@ -333,7 +345,7 @@
         </div>
       </div>
 
-      <div style="height:994px;pointer-events:none;"></div>
+      <div style="height:1064px;pointer-events:none;"></div>
 
     </div><!-- /screen0 -->
 
@@ -635,11 +647,11 @@
       padding:15px 1px 15px 18px;
       display:flex;align-items:flex-start;">
       <div style="display:flex;gap:12px;align-items:center;width:204px;">
-        <img src="assets/savings-icon-gift.svg" alt=""
-          style="width:32px;height:32px;flex-shrink:0;max-width:none;" />
+        <img src="assets/savings-icon-piggybank.svg" alt=""
+          style="width:24px;height:24px;flex-shrink:0;max-width:none;" />
         <div style="display:flex;flex-direction:column;gap:2px;">
-          <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Переведём +102 ₽</p>
-          <p style="font-family:var(--ff);font-size:11.7px;font-weight:400;color:rgba(0,0,0,0.7);white-space:nowrap;">24 ноября</p>
+          <p id="barLine1" style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Пополним на 5 000 ₽</p>
+          <p id="barLine2" style="font-family:var(--ff);font-size:11.7px;font-weight:400;color:rgba(0,0,0,0.7);white-space:nowrap;">24 ноября</p>
         </div>
       </div>
     </div>
@@ -1033,6 +1045,7 @@
         day.classList.add('cal-day--selected');
         setCheckbox(false);
         dateValueText.textContent = 'Каждое ' + day.querySelector('p').textContent.trim() + '-е';
+        updateBottomBar();
       });
     });
 
@@ -1042,9 +1055,11 @@
         day30.classList.add('cal-day--selected');
         setCheckbox(true);
         dateValueText.textContent = 'Каждый последний день месяца';
+        updateBottomBar();
       } else {
         setCheckbox(false);
         dateValueText.textContent = 'Каждое 30-е';
+        updateBottomBar();
       }
     });
 
@@ -1067,7 +1082,44 @@
       return s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
 
-    function getMultiplier() {
+
+    var BAR_MONTHS = ['января','февраля','марта','апреля','мая','июня',
+                      'июля','августа','сентября','октября','ноября','декабря'];
+
+    function firstBarDate(dayParam) {
+      var today = new Date();
+      var td = today.getDate(), tm = today.getMonth(), ty = today.getFullYear();
+      if (dayParam === 'last') {
+        var lastThis = new Date(ty, tm + 1, 0).getDate();
+        if (td < lastThis) return { d: lastThis, m: tm };
+        var nm = tm + 1, ny = ty;
+        if (nm > 11) { nm = 0; ny++; }
+        return { d: new Date(ny, nm + 1, 0).getDate(), m: nm };
+      }
+      var dn = parseInt(dayParam, 10);
+      if (td <= dn) return { d: dn, m: tm };
+      var nm = tm + 1, ny = ty;
+      if (nm > 11) { nm = 0; ny++; }
+      return { d: dn, m: nm };
+    }
+
+    function getSelectedBarDay() {
+      if (cbChecked) return 'last';
+      var sel = document.querySelector('.cal-day--selected p');
+      return sel ? sel.textContent.trim() : '24';
+    }
+
+    function updateBottomBar() {
+      var barLine1 = document.getElementById('barLine1');
+      var barLine2 = document.getElementById('barLine2');
+      if (!barLine1 || !barLine2) return;
+      var amt = kbIsOpen ? (curAmt || prevAmt) : prevAmt;
+      barLine1.textContent = 'Пополним на ' + fmtAmt(amt) + ' ₽';
+      var date = firstBarDate(getSelectedBarDay());
+      barLine2.textContent = date.d + ' ' + BAR_MONTHS[date.m];
+    }
+
+        function getMultiplier() {
       var active = document.querySelector('.freq-chip--active p');
       if (!active) return 12;
       var text = active.textContent.trim();
@@ -1089,6 +1141,7 @@
         var t = calcTooltipText(curAmt);
         if (t !== null) tooltipText.textContent = t;
       }
+      updateBottomBar();
     }
 
     function setAmountError(on) {
@@ -1144,6 +1197,7 @@
         prevAmt = curAmt;
         setAmountError(false);
       }
+      updateBottomBar();
     }
 
     amountCell.addEventListener('click', function () {
@@ -1441,6 +1495,12 @@
       dragStartX = null;
       setTimeout(function () { wasDragged = false; }, 0);
     });
+
+    document.getElementById('gcBlockTrigger').addEventListener('click', function () {
+      if (!wasDragged) openGc();
+    });
+
+    updateBottomBar();
 
   })();
 </script>
