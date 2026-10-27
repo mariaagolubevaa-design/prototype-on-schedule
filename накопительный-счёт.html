@@ -207,22 +207,23 @@
       </div>
 
       <!-- Горизонтальный ряд карточек «Пусть копятся сами» — свайп листает карточки -->
-      <div id="savingsCards" style="position:absolute;top:550px;left:0;width:402px;height:148px;
+      <div id="savingsCards" style="position:absolute;top:550px;left:0;width:402px;height:168px;
         overflow-x:auto;overflow-y:hidden;
         display:flex;flex-direction:row;align-items:flex-start;gap:12px;
         scroll-snap-type:x mandatory;scroll-padding-left:8px;
         -webkit-overflow-scrolling:touch;
-        padding-left:8px;padding-right:8px;
+        padding-top:20px;padding-left:8px;padding-right:8px;
+        margin-top:-20px;
         box-sizing:border-box;
         scrollbar-width:none;">
 
         <!-- По расписанию (222×148) -->
         <a href="по-расписанию.html" style="flex-shrink:0;width:222px;height:148px;
           background:#fff;border-radius:20px;
-          position:relative;overflow:hidden;
+          position:relative;overflow:visible;
           scroll-snap-align:start;
           display:block;text-decoration:none;">
-          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;will-change:transform;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:visible;pointer-events:none;will-change:transform;">
             <img src="assets/savings-illus-calendar.png" alt=""
               style="position:absolute;left:-22px;top:0;width:100px;height:56px;max-width:none;" />
           </div>
@@ -235,10 +236,10 @@
         <!-- Процент от доходов (222×148) -->
         <a href="по-расписанию.html#income" style="flex-shrink:0;width:222px;height:148px;
           background:#fff;border-radius:20px;
-          position:relative;overflow:hidden;
+          position:relative;overflow:visible;
           scroll-snap-align:start;
           display:block;text-decoration:none;">
-          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;will-change:transform;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:visible;pointer-events:none;will-change:transform;">
             <img src="assets/savings-illus-wallet.png" alt=""
               style="position:absolute;left:-44px;top:-15px;width:146px;height:81px;max-width:none;" />
           </div>
@@ -251,10 +252,10 @@
         <!-- Процент от расходов (222×148) -->
         <a href="по-расписанию.html#expenses" style="flex-shrink:0;width:222px;height:148px;
           background:#fff;border-radius:20px;
-          position:relative;overflow:hidden;
+          position:relative;overflow:visible;
           scroll-snap-align:start;
           display:block;text-decoration:none;">
-          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;will-change:transform;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:visible;pointer-events:none;will-change:transform;">
             <img src="assets/savings-illus-purchase.png" alt=""
               style="position:absolute;left:-38px;top:-16px;width:134px;height:75px;max-width:none;" />
           </div>
@@ -267,9 +268,9 @@
         <!-- Округление с покупок (222×148) -->
         <div style="flex-shrink:0;width:222px;height:148px;
           background:#fff;border-radius:20px;
-          position:relative;overflow:hidden;
+          position:relative;overflow:visible;
           scroll-snap-align:start;">
-          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;will-change:transform;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:visible;pointer-events:none;will-change:transform;">
             <img src="assets/savings-illus-recept.png" alt=""
               style="position:absolute;left:-34px;top:-10px;width:130px;height:73px;max-width:none;" />
           </div>
@@ -282,10 +283,10 @@
         <!-- 52 недели (222×148) -->
         <a href="по-расписанию.html#weeks" style="flex-shrink:0;width:222px;height:148px;
           background:#fff;border-radius:20px;
-          position:relative;overflow:hidden;
+          position:relative;overflow:visible;
           scroll-snap-align:start;
           display:block;text-decoration:none;">
-          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:hidden;pointer-events:none;will-change:transform;">
+          <div style="position:absolute;left:16px;top:18px;width:56px;height:56px;overflow:visible;pointer-events:none;will-change:transform;">
             <img src="assets/savings-illus-challenge.png" alt=""
               style="position:absolute;left:-33px;top:-4px;width:120px;height:67px;max-width:none;transform:scaleX(-1);" />
           </div>
@@ -422,7 +423,7 @@
       <!-- Баннер «По расписанию» (подключён) -->
       <a href="по-расписанию.html" style="position:absolute;top:550px;left:8px;width:386px;height:148px;
         background:#fff;border-radius:20px;
-        display:block;text-decoration:none;overflow:hidden;">
+        display:block;text-decoration:none;overflow:visible;">
         <!-- Иллюстрация календаря (правая часть) -->
         <img src="assets/savings-illus-calendar-filled.png" alt=""
           style="position:absolute;left:190px;top:9px;width:226.676px;height:126.509px;max-width:none;object-fit:cover;pointer-events:none;" />
