@@ -1080,10 +1080,28 @@
     var kbOverlay       = document.getElementById('kbOverlay');
     var kbSheet         = document.getElementById('kbSheet');
 
-    var prevAmt     = '5000';
-    var curAmt      = '';
-    var kbIsOpen    = false;
-    var amountError = false;
+    var prevAmt       = '5000';
+    var curAmt        = '';
+    var kbIsOpen      = false;
+    var amountError   = false;
+    var kbScrollSaved = 0;
+    var _kbScrollAnim = null;
+
+    function smoothScrollScreen0(target, duration) {
+      if (_kbScrollAnim) { cancelAnimationFrame(_kbScrollAnim); _kbScrollAnim = null; }
+      var startVal = screen0.scrollTop;
+      var delta = target - startVal;
+      if (!delta) return;
+      var t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / duration, 1);
+        var e = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+        screen0.scrollTop = startVal + delta * e;
+        if (p < 1) _kbScrollAnim = requestAnimationFrame(step);
+      }
+      _kbScrollAnim = requestAnimationFrame(step);
+    }
 
     function fmtAmt(s) {
       if (!s) return '0';
@@ -1186,6 +1204,11 @@
       kbOverlay.style.opacity = '1';
       kbOverlay.style.pointerEvents = 'auto';
       kbSheet.style.transform = 'translateY(0)';
+      kbScrollSaved = screen0.scrollTop;
+      var amountContainer = amountCell.parentElement;
+      var containerBottom = 736 + amountContainer.offsetHeight;
+      var target = Math.max(0, containerBottom + 16 - (874 - kbSheet.offsetHeight));
+      smoothScrollScreen0(target, 220);
     }
 
     function closeKb() {
@@ -1194,6 +1217,7 @@
       kbOverlay.style.opacity = '0';
       kbOverlay.style.pointerEvents = 'none';
       kbSheet.style.transform = 'translateY(100%)';
+      smoothScrollScreen0(kbScrollSaved, 220);
       var n = parseInt(curAmt, 10) || 0;
       if (!curAmt || n === 0) {
         curAmt = prevAmt;
