@@ -1205,10 +1205,16 @@
       kbOverlay.style.pointerEvents = 'auto';
       kbSheet.style.transform = 'translateY(0)';
       kbScrollSaved = screen0.scrollTop;
-      var amountContainer = amountCell.parentElement;
-      var containerBottom = 736 + amountContainer.offsetHeight;
-      var target = Math.max(0, containerBottom + 16 - (874 - kbSheet.offsetHeight));
-      smoothScrollScreen0(target, 220);
+      var kbH = kbSheet.offsetHeight;
+      screen0.style.paddingBottom = kbH + 'px';
+      var hintRow = tooltipText.parentElement;
+      var hintBottom = hintRow.getBoundingClientRect().bottom;
+      var kbFinalTop = kbSheet.offsetParent.getBoundingClientRect().bottom - kbH;
+      console.log('hint bottom:', hintBottom, 'kb top:', kbFinalTop);
+      var scrollDelta = hintBottom - (kbFinalTop - 16);
+      if (scrollDelta > 0) {
+        smoothScrollScreen0(screen0.scrollTop + scrollDelta, 220);
+      }
     }
 
     function closeKb() {
@@ -1217,6 +1223,7 @@
       kbOverlay.style.opacity = '0';
       kbOverlay.style.pointerEvents = 'none';
       kbSheet.style.transform = 'translateY(100%)';
+      screen0.style.paddingBottom = '';
       smoothScrollScreen0(kbScrollSaved, 220);
       var n = parseInt(curAmt, 10) || 0;
       if (!curAmt || n === 0) {
