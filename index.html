@@ -499,9 +499,10 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      cursor: pointer;
+      cursor: default;
       text-decoration: none;
     }
+    a.tab-btn { cursor: pointer; }
     .tab-btn img {
       width: 24px;
       height: 24px;
@@ -516,7 +517,39 @@
       text-align: center;
       white-space: nowrap;
     }
-    .tab-label.active { color: var(--accent-primary); }
+    .tab-label.active {
+      color: var(--accent-primary);
+      animation: tab-label-activate 200ms ease-out forwards;
+    }
+    @keyframes tab-label-activate {
+      from { color: #A7A7A7; }
+      to   { color: #148F2B; }
+    }
+    @keyframes tab-home-bounce {
+      from { transform: scale(0.9); }
+      to   { transform: scale(1); }
+    }
+    @keyframes tab-icon-fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .tab-active-icon-wrap {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      animation: tab-home-bounce 350ms ease-out forwards;
+    }
+    .tab-active-icon-wrap img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+    }
+    .tab-active-icon-wrap .tab-icon-green {
+      animation: tab-icon-fadein 200ms ease-out forwards;
+    }
 
     /* ── TRANSFERS ISLAND ── */
     .transfers-island {
@@ -852,7 +885,10 @@
     </div>
     <div class="tab-bar-inner">
       <div class="tab-btn">
-        <img src="assets/icon-main-active.svg" alt="" />
+        <div class="tab-active-icon-wrap">
+          <img src="assets/icon-main.svg" alt="" />
+          <img src="assets/icon-main-active.svg" alt="" class="tab-icon-green" />
+        </div>
         <span class="tab-label active">Главный</span>
       </div>
       <a class="tab-btn" href="накопления.html">
