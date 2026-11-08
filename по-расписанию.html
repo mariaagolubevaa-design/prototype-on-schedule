@@ -206,6 +206,8 @@
       transition: width 200ms ease, opacity 200ms ease, border-radius 200ms ease;
     }
   </style>
+  <link rel="stylesheet" href="preview-fit.css" />
+  <script src="preview-fit.js" defer></script>
 </head>
 <body>
 <div class="phone">
@@ -1526,7 +1528,8 @@
       var dx = e.clientX - dragStartX;
       if (Math.abs(dx) > 5) {
         wasDragged = true;
-        wrapper.scrollLeft = dragScrollLeft - dx;
+        var scale = wrapper.getBoundingClientRect().width / wrapper.clientWidth;
+        wrapper.scrollLeft = dragScrollLeft - dx / scale;
       }
     });
 
