@@ -830,7 +830,7 @@
       <img src="assets/schedule-drag-handle.svg" alt=""
         style="display:block;width:36px;height:4px;max-width:none;" />
     </div>
-    <div style="background:#fff;border-radius:16px 16px 0 0;
+    <div id="monthPicker" style="background:#fff;border-radius:16px 16px 0 0;
       padding:24px 16px 16px;
       display:flex;flex-direction:column;gap:16px;position:relative;">
       <div style="position:absolute;inset:0;border-radius:inherit;pointer-events:none;
@@ -883,13 +883,17 @@
         </div>
       </div>
     </div>
-    <div style="background:#fff;padding:44px 16px 61px;
+    <div id="lastDayRow" style="background:#fff;padding:44px 16px 61px;cursor:pointer;
       display:flex;align-items:center;justify-content:space-between;position:relative;">
       <div style="position:absolute;inset:0;pointer-events:none;
         box-shadow:inset 1px 1px 4px 0px rgba(223,229,233,0.25),
                    inset 1px 1px 4px 0px rgba(223,229,233,0.30);"></div>
       <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Последний день</p>
       <div id="lastDayCheckbox" style="width:20px;height:20px;border:1.9px solid #a7a7a7;border-radius:4px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;"></div>
+    </div>
+    <div id="weekPicker" hidden style="background:#fff;border-radius:16px 16px 0 0;padding:24px 16px 28px;">
+      <p style="font-family:var(--ff);font-size:20px;font-weight:600;margin-bottom:12px;">Выберите день недели</p>
+      <div id="weekDays"></div>
     </div>
   </div><!-- /calSheet -->
 
@@ -979,6 +983,7 @@
 
 </div><!-- /phone -->
 
+<script src="schedule.js"></script>
 <script>
   (function () {
 
@@ -1003,6 +1008,7 @@
         if (chipText === 'Giga Chat') { openGc(); return; }
         chips.forEach(function (c) { c.classList.remove('freq-chip--active'); });
         chip.classList.add('freq-chip--active');
+        updateSchedule();
         var amt = (kbIsOpen && curAmt) ? curAmt : prevAmt;
         if (amt) {
           var t = calcTooltipText(amt);
@@ -1016,7 +1022,36 @@
     var calSheet   = document.getElementById('calSheet');
     var dateTrigger = document.getElementById('dateTrigger');
 
+    var weekDay = 1;
+    var weekPicker = document.getElementById('weekPicker');
+    var monthPicker = document.getElementById('monthPicker');
+    var lastDayRow = document.getElementById('lastDayRow');
+    var weekButtons = document.getElementById('weekDays');
+    [1, 2, 3, 4, 5, 6, 0].forEach(function (day) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.style.cssText = 'width:100%;min-height:44px;padding:0 12px;border:0;border-radius:12px;text-align:left;font:500 15px var(--ff);color:#000;cursor:pointer;';
+      button.addEventListener('click', function () {
+        weekDay = day;
+        updateSchedule();
+        closeCal();
+      });
+      button.dataset.day = day;
+      weekButtons.appendChild(button);
+    });
+
     function openCal() {
+      var weekly = getFrequency() === 'week';
+      weekPicker.hidden = !weekly;
+      monthPicker.style.display = weekly ? 'none' : 'flex';
+      lastDayRow.style.display = weekly ? 'none' : 'flex';
+      Array.from(weekButtons.children).forEach(function (button) {
+        var day = Number(button.dataset.day);
+        var selected = day === weekDay;
+        button.textContent = savingsSchedule.weekdays[day][0] + (selected ? '  ✓' : '');
+        button.setAttribute('aria-pressed', String(selected));
+        button.style.background = selected ? '#e5f5eb' : '#fff';
+      });
       calOverlay.style.opacity = '1';
       calOverlay.style.pointerEvents = 'auto';
       calSheet.style.transform = 'translateY(0)';
@@ -1059,7 +1094,7 @@
       });
     });
 
-    checkbox.addEventListener('click', function () {
+    lastDayRow.addEventListener('click', function () {
       if (!cbChecked) {
         days.forEach(function (d) { d.classList.remove('cal-day--selected'); });
         day30.classList.add('cal-day--selected');
@@ -1111,27 +1146,20 @@
     }
 
 
-    var BAR_MONTHS = ['января','февраля','марта','апреля','мая','июня',
-                      'июля','августа','сентября','октября','ноября','декабря'];
+    function getFrequency() {
+      return chips[1].classList.contains('freq-chip--active') ? 'week' : 'month';
+    }
 
-    function firstBarDate(dayParam) {
-      var today = new Date();
-      var td = today.getDate(), tm = today.getMonth(), ty = today.getFullYear();
-      if (dayParam === 'last') {
-        var lastThis = new Date(ty, tm + 1, 0).getDate();
-        if (td < lastThis) return { d: lastThis, m: tm };
-        var nm = tm + 1, ny = ty;
-        if (nm > 11) { nm = 0; ny++; }
-        return { d: new Date(ny, nm + 1, 0).getDate(), m: nm };
-      }
-      var dn = parseInt(dayParam, 10);
-      if (td <= dn) return { d: dn, m: tm };
-      var nm = tm + 1, ny = ty;
-      if (nm > 11) { nm = 0; ny++; }
-      return { d: dn, m: nm };
+    function updateSchedule() {
+      var frequency = getFrequency();
+      var day = getSelectedBarDay();
+      var label = savingsSchedule.label(frequency, day);
+      dateValueText.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+      updateBottomBar();
     }
 
     function getSelectedBarDay() {
+      if (getFrequency() === 'week') return String(weekDay);
       if (cbChecked) return 'last';
       var sel = document.querySelector('.cal-day--selected p');
       return sel ? sel.textContent.trim() : '24';
@@ -1143,8 +1171,8 @@
       if (!barLine1 || !barLine2) return;
       var amt = kbIsOpen ? (curAmt || prevAmt) : prevAmt;
       barLine1.textContent = 'Пополним на ' + fmtAmt(amt) + ' ₽';
-      var date = firstBarDate(getSelectedBarDay());
-      barLine2.textContent = date.d + ' ' + BAR_MONTHS[date.m];
+      var date = savingsSchedule.nextDate(getFrequency(), getSelectedBarDay());
+      barLine2.textContent = savingsSchedule.dateFormat.format(date);
     }
 
         function getMultiplier() {
@@ -1277,11 +1305,12 @@
       if (amountError) return;
       var n = parseInt(prevAmt, 10) || 0;
       if (n < 100) { setAmountError(true); return; }
-      var day = cbChecked ? 'last' : (function () {
-        var sel = document.querySelector('.cal-day--selected p');
-        return sel ? sel.textContent.trim() : '24';
-      })();
-      window.location.href = 'подключено.html?amount=' + prevAmt + '&day=' + day + '&from=1';
+      var params = new URLSearchParams({
+        amount: prevAmt, day: getSelectedBarDay(), frequency: getFrequency(),
+        source: document.getElementById('fromAccountText').textContent.trim(),
+        from: '1'
+      });
+      window.location.href = 'подключено.html?' + params;
     });
 
     document.getElementById('connectBtn2').addEventListener('click', function () {
@@ -1354,6 +1383,7 @@
           chips.forEach(function (c) { c.classList.remove('freq-chip--active'); });
           chips[0].classList.add('freq-chip--active');
           setAmountError(false);
+          updateSchedule();
           closeGc();
         });
 

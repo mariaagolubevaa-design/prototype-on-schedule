@@ -98,6 +98,116 @@
       cursor: pointer;
       transition: width 200ms ease, opacity 200ms ease, border-radius 200ms ease;
     }
+    .account-schedule {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+    }
+    .account-schedule-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.24);
+      backdrop-filter: blur(5px);
+    }
+    .account-schedule-panel {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 22px 12px 56px;
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      font-size: 15px;
+    }
+    .account-schedule-handle {
+      position: absolute;
+      top: 0;
+      left: calc(50% - 22px);
+      width: 44px;
+      height: 20px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .account-schedule-handle::before {
+      content: '';
+      display: block;
+      margin: auto;
+      width: 36px;
+      height: 4px;
+      border-radius: 4px;
+      background: #ccc;
+    }
+    .account-schedule-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .account-schedule-title + .account-schedule-caption {
+      margin-top: 4px;
+    }
+    .account-schedule-caption {
+      color: #4d4d4d;
+      font-size: 11px;
+    }
+    .account-schedule-summary {
+      margin: 16px 0 8px;
+    }
+    .account-schedule-progress {
+      height: 16px;
+      margin-top: 4px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: repeating-linear-gradient(-60deg, #f1f1f1 0 4px, #fff 4px 10px);
+    }
+    .account-schedule-progress-fill {
+      width: 80%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(86.6deg, #34C759 10.53%, #0EBAB1 99.7%);
+    }
+    .account-schedule-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .account-schedule-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 3px 12px;
+      border-radius: 12px;
+      background: #f5f5f5;
+    }
+    .account-schedule-field:last-child {
+      grid-column: 1 / -1;
+    }
+    .account-schedule-field, .account-schedule-action {
+      font: 500 15px/1.2 var(--ff);
+    }
+    .account-schedule-field .account-schedule-caption,
+    .account-schedule-action .account-schedule-caption {
+      margin-top: 2px;
+      font-size: 11px;
+    }
+    .account-schedule-field img, .account-schedule-action img {
+      width: 24px;
+      height: 24px;
+      flex: none;
+    }
+    .account-schedule-field img {
+      height: auto;
+    }
+    .account-schedule-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0;
+    }
+    .account-schedule-actions {
+      margin-top: 12px;
+    }
+    .account-schedule-action + .account-schedule-action {
+      border-top: 1px solid #e0e0e0;
+    }
   </style>
   <link rel="stylesheet" href="preview-fit.css" />
   <script src="preview-fit.js" defer></script>
@@ -423,7 +533,7 @@
       </div>
 
       <!-- Баннер «По расписанию» (подключён) -->
-      <a href="по-расписанию.html" style="position:absolute;top:550px;left:8px;width:386px;height:148px;
+      <a id="manageCarSchedule" href="?account=1&amp;manage=1" aria-haspopup="dialog" style="position:absolute;top:550px;left:8px;width:386px;height:148px;
         background:#fff;border-radius:20px;
         display:block;text-decoration:none;overflow:visible;">
         <!-- Иллюстрация календаря (правая часть) -->
@@ -491,12 +601,52 @@
 
   </div><!-- /#screensWrapper -->
 
+  <div id="carScheduleSheet" class="account-schedule" hidden>
+    <div class="account-schedule-backdrop" aria-hidden="true"></div>
+    <section class="account-schedule-panel" role="dialog" aria-modal="true" aria-labelledby="carScheduleTitle">
+      <button type="button" class="account-schedule-handle" aria-label="Закрыть настройки"></button>
+      <h2 id="carScheduleTitle" class="account-schedule-title">Автонакопление</h2>
+      <p class="account-schedule-caption">За время подключения «По расписанию»</p>
+      <div class="account-schedule-summary">
+        <p>40 000 ₽ <span class="account-schedule-caption">с автопополнений из 50 000 ₽ на счёте</span></p>
+        <div class="account-schedule-progress" role="meter" aria-label="Доля автопополнений в балансе" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80">
+          <div class="account-schedule-progress-fill"></div>
+        </div>
+      </div>
+      <div class="account-schedule-fields">
+        <div class="account-schedule-field">
+          <img src="assets/edit-pencil1.svg" alt="" />
+          <div><p>10 000 ₽</p><p class="account-schedule-caption">Сумма пополнения</p></div>
+        </div>
+        <div class="account-schedule-field">
+          <img src="assets/edit-pencil1.svg" alt="" />
+          <div><p id="carScheduleDate"></p><p class="account-schedule-caption">Дата следующего</p></div>
+        </div>
+        <div class="account-schedule-field">
+          <img src="assets/edit-pencil.svg" alt="" />
+          <div><p>Дебетовый • 9432</p><p class="account-schedule-caption">Откуда пополнять</p></div>
+        </div>
+      </div>
+      <div class="account-schedule-actions">
+        <div class="account-schedule-action">
+          <img src="assets/edit-pausecircle.svg" alt="" />
+          <div><p>Приостановить</p><p class="account-schedule-caption">Поставить пополнения на паузу</p></div>
+        </div>
+        <div class="account-schedule-action">
+          <img src="assets/edit-trash.svg" alt="" />
+          <p>Удалить</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- Home indicator -->
   <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
     width:134px;height:5px;background:#000;border-radius:3px;opacity:0.2;z-index:10;"></div>
 
 </div>
 
+<script src="schedule.js"></script>
 <script>
   (function () {
     var wrapper       = document.getElementById('screensWrapper');
@@ -504,6 +654,41 @@
     var sdot1         = document.getElementById('sdot1');
     var currentScreen = 0;
     var wasDragged    = false;
+
+    var params = new URLSearchParams(location.search);
+    var carScheduleLink = document.getElementById('manageCarSchedule');
+    var carScheduleSheet = document.getElementById('carScheduleSheet');
+    var closeSheetButton = carScheduleSheet.querySelector('button');
+
+    function openCarSchedule() {
+      document.getElementById('carScheduleDate').textContent =
+        savingsSchedule.dateFormat.format(savingsSchedule.nextDate('month', '22'));
+      carScheduleSheet.hidden = false;
+      wrapper.inert = true;
+      closeSheetButton.focus();
+    }
+
+    function closeCarSchedule() {
+      carScheduleSheet.hidden = true;
+      wrapper.inert = false;
+      carScheduleLink.focus({ preventScroll: true });
+      if (params.has('manage')) {
+        params.delete('manage');
+        history.replaceState(null, '', '?' + params);
+      }
+    }
+
+    carScheduleLink.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (!wasDragged) openCarSchedule();
+    });
+    closeSheetButton.addEventListener('click', closeCarSchedule);
+    carScheduleSheet.querySelector('.account-schedule-backdrop')
+      .addEventListener('click', closeCarSchedule);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !carScheduleSheet.hidden) closeCarSchedule();
+    });
+
 
     function setScreenIndicator(idx) {
       currentScreen = idx;
@@ -520,15 +705,12 @@
       }
     }
 
-    wrapper.scrollLeft = 0;
-    setScreenIndicator(0);
+    var initialScreen = params.get('account') === '1' ? 1 : 0;
+    wrapper.scrollLeft = initialScreen * wrapper.clientWidth;
+    setScreenIndicator(initialScreen);
 
-    if (new URLSearchParams(location.search).get('account') === '1') {
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          wrapper.scrollTo({ left: 402, behavior: 'smooth' });
-        });
-      });
+    if (initialScreen === 1 && params.get('manage') === '1') {
+      openCarSchedule();
     }
 
     wrapper.addEventListener('scroll', function () {

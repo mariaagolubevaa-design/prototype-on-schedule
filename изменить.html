@@ -76,7 +76,7 @@
   </div>
 
   <!-- Back arrow -->
-  <a href="подключено.html"
+  <a id="editBack" href="подключено.html"
     style="position:absolute;top:67px;left:2px;display:block;width:28px;height:28px;line-height:0;z-index:11;">
     <img src="assets/savings-chevron-left.svg" alt="Назад"
       style="width:28px;height:28px;max-width:none;" />
@@ -97,12 +97,12 @@
     <!-- Amount + progress bar -->
     <div style="margin:58px 12px 0;display:flex;flex-direction:column;gap:4px;">
       <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;">
-        20 000 Р <span style="font-family:var(--ff);font-size:11px;font-weight:500;color:#4d4d4d;line-height:1.2;">из 50 000 Р накопленных</span>
+        <span id="editProgressAmount">20 000 ₽</span> <span id="editProgressLabel" style="font-family:var(--ff);font-size:11px;font-weight:500;color:#4d4d4d;line-height:1.2;">из 50 000 ₽ накопленных</span>
       </p>
       <!-- Progress bar -->
       <div style="position:relative;height:16px;width:100%;border-radius:6px;overflow:hidden;background:#fff;">
         <div style="position:absolute;inset:0;background:repeating-linear-gradient(-60deg,rgba(186,186,186,0.2) 0px,rgba(186,186,186,0.2) 4px,#fff 4px,#fff 10px);"></div>
-        <div style="position:absolute;top:0;left:0;height:16px;width:40%;border-radius:6px;background:linear-gradient(86.6deg,#34C759 10.53%,#0EBAB1 99.7%);"></div>
+        <div id="editProgressBar" style="position:absolute;top:0;left:0;height:16px;width:40%;border-radius:6px;background:linear-gradient(86.6deg,#34C759 10.53%,#0EBAB1 99.7%);"></div>
       </div>
     </div>
 
@@ -114,7 +114,7 @@
         <img src="assets/edit-pencil1.svg" alt=""
           style="width:24px;height:52px;flex-shrink:0;max-width:none;" />
         <div style="display:flex;flex-direction:column;gap:2px;padding:12px 0;">
-          <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;">5 000 Р</p>
+          <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;" id="editAmount">5 000 ₽</p>
           <p style="font-family:var(--ff);font-size:11px;font-weight:500;color:#4d4d4d;line-height:1.2;">Сумма пополнения</p>
         </div>
       </div>
@@ -124,7 +124,7 @@
         <img src="assets/edit-pencil1.svg" alt=""
           style="width:24px;height:52px;flex-shrink:0;max-width:none;" />
         <div style="display:flex;flex-direction:column;gap:2px;padding:12px 0;">
-          <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;">24 ноября</p>
+          <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;" id="editDate">24 ноября</p>
           <p style="font-family:var(--ff);font-size:11px;font-weight:500;color:#4d4d4d;line-height:1.2;">Дата следующего</p>
         </div>
       </div>
@@ -136,7 +136,7 @@
       <img src="assets/edit-pencil.svg" alt=""
         style="width:24px;height:44px;flex-shrink:0;max-width:none;" />
       <div style="display:flex;flex-direction:column;gap:4px;padding:8px 0;">
-        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;">Дебетовый • 9432</p>
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;line-height:normal;" id="editSource">Дебетовый • 9432</p>
         <p style="font-family:var(--ff);font-size:11px;font-weight:500;color:#4d4d4d;line-height:1.2;">Откуда пополнять</p>
       </div>
     </div>
@@ -170,5 +170,30 @@
     width:134px;height:5px;background:#000;border-radius:3px;opacity:0.2;z-index:5;"></div>
 
 </div>
+<script src="schedule.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('account') === '1') {
+    location.replace('накопительный-счёт.html?account=1&manage=1');
+    return;
+  }
+  var amount = Number(params.get('amount'));
+  var day = params.get('day');
+  if (!day || !amount) return;
+
+  var frequency = params.get('frequency') === 'week' ? 'week' : 'month';
+  var date = savingsSchedule.nextDate(frequency, day);
+  var back = document.getElementById('editBack');
+  back.href = 'подключено.html?' + params;
+
+  document.getElementById('editAmount').textContent = savingsSchedule.amountFormat.format(amount) + ' ₽';
+  document.getElementById('editDate').textContent = savingsSchedule.dateFormat.format(date);
+  document.getElementById('editSource').textContent = params.get('source') || 'Дебетовый • 9432';
+  document.getElementById('editProgressAmount').textContent = '0 ₽';
+  document.getElementById('editProgressLabel').textContent = 'с автопополнений';
+  document.getElementById('editProgressBar').parentElement.hidden = true;
+})();
+</script>
 </body>
 </html>

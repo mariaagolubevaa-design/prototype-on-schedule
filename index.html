@@ -357,7 +357,7 @@
     .screen-content {
       position: relative;
       width: 402px;
-      height: 1190px;
+      height: 1262px;
     }
 
     /* ── DEPOSITS ISLAND ── */
@@ -366,7 +366,7 @@
       top: 760px;
       left: 8px;
       width: 386px;
-      height: 144px;
+      height: 216px;
       background: white;
       border-radius: 20px;
       z-index: 3;
@@ -407,6 +407,7 @@
       text-decoration: none;
       color: inherit;
     }
+    .deposits-cell + .deposits-cell { top: 139px; }
     .deposits-cell-icon {
       width: 36px;
       height: 36px;
@@ -563,7 +564,7 @@
     /* ── TRANSFERS ISLAND ── */
     .transfers-island {
       position: absolute;
-      top: 912px;
+      top: 984px;
       left: 8px;
       width: 386px;
       height: 263px;
@@ -641,10 +642,10 @@
       position: absolute;
       top: 138px;
       left: 16px;
-      width: 374px;
+      right: 16px;
       display: flex;
       align-items: flex-start;
-      gap: 16px;
+      justify-content: space-between;
     }
     .transfers-option {
       display: flex;
@@ -669,6 +670,14 @@
       width: 28px;
       height: 28px;
       object-fit: contain;
+    }
+    .transfers-icon-btn .transfers-chat-icon {
+      width: 27px;
+      height: auto;
+    }
+    .transfers-initials {
+      font: 500 16px/1 var(--font-family-base);
+      color: var(--icon-secondary);
     }
     .transfers-label {
       display: flex;
@@ -817,6 +826,27 @@
         </div>
       </div>
     </a>
+    <a class="deposits-cell" href="накопительный-счёт.html?account=1">
+      <div class="deposits-cell-icon">
+        <img src="assets/deposits-icon.svg" alt="" />
+      </div>
+      <div class="deposits-cell-body">
+        <div class="deposits-cell-info">
+          <span class="deposits-cell-amount">50 000 ₽</span>
+          <div class="deposits-cell-subtitle">
+            <span>На машину</span>
+            <div class="deposits-cell-sep">
+              <img src="assets/ellipse22.svg" alt="" width="3" height="3" />
+              <span>9169</span>
+            </div>
+          </div>
+        </div>
+        <div class="deposits-cell-rate">
+          <span>12,5</span>
+          <span>%</span>
+        </div>
+      </div>
+    </a>
   </div>
 
   <!-- TRANSFERS ISLAND -->
@@ -856,7 +886,7 @@
       </div>
       <div class="transfers-option">
         <div class="transfers-icon-btn">
-          <img src="assets/sber-transfers-client.svg" alt="" />
+          <span class="transfers-initials" aria-hidden="true">МВ</span>
         </div>
         <div class="transfers-label">
           <span>Мария</span>
@@ -865,7 +895,7 @@
       </div>
       <div class="transfers-option">
         <div class="transfers-icon-btn">
-          <img src="assets/sber-ev-icon.svg" alt="" />
+          <span class="transfers-initials" aria-hidden="true">ЕВ</span>
         </div>
         <div class="transfers-label">
           <span>Елена</span>
@@ -874,7 +904,7 @@
       </div>
       <div class="transfers-option">
         <div class="transfers-icon-btn">
-          <img src="assets/sber-chat.png" alt="" style="width:24px;height:22px;" />
+          <img class="transfers-chat-icon" src="assets/sber-chat.png" alt="" />
         </div>
         <div class="transfers-label">
           <span>Чаты</span>

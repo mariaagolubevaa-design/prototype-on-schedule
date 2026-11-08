@@ -241,7 +241,7 @@
   <div class="anim-btn-pair" style="position:absolute;top:683px;left:16px;width:370px;
     display:flex;align-items:center;justify-content:space-between;z-index:4;">
 
-    <a href="изменить.html" style="text-decoration:none;background:#fff;width:180px;height:76px;border-radius:16px;
+    <a id="editScheduleLink" href="изменить.html" style="text-decoration:none;background:#fff;width:180px;height:76px;border-radius:16px;
       display:flex;align-items:center;">
       <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;
         justify-content:center;padding:0 16px;">
@@ -361,52 +361,23 @@
 })();
 </script>
 
+<script src="schedule.js"></script>
 <script>
 (function () {
   var params = new URLSearchParams(window.location.search);
   var amount = params.get('amount');
-  var day    = params.get('day');
+  var day = params.get('day');
   if (!amount || !day) return;
 
-  var MONTHS = ['января','февраля','марта','апреля','мая','июня',
-                'июля','августа','сентября','октября','ноября','декабря'];
-
-  function fmtAmt(s) {
-    return String(parseInt(s, 10)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  }
-
-  function firstDate(dayParam) {
-    var today = new Date();
-    var td = today.getDate(), tm = today.getMonth(), ty = today.getFullYear();
-    if (dayParam === 'last') {
-      var lastThis = new Date(ty, tm + 1, 0).getDate();
-      if (td < lastThis) return { d: lastThis, m: tm };
-      var nm = tm + 1, ny = ty;
-      if (nm > 11) { nm = 0; ny++; }
-      return { d: new Date(ny, nm + 1, 0).getDate(), m: nm };
-    }
-    var dn = parseInt(dayParam, 10);
-    if (td <= dn) return { d: dn, m: tm };
-    var nm = tm + 1, ny = ty;
-    if (nm > 11) { nm = 0; ny++; }
-    return { d: dn, m: nm };
-  }
-
-  var date   = firstDate(day);
+  var frequency = params.get('frequency') === 'week' ? 'week' : 'month';
+  var date = savingsSchedule.nextDate(frequency, day);
   var firstEl = document.getElementById('firstTransferText');
   var schedEl = document.getElementById('scheduleText');
-
-  if (firstEl) {
-    firstEl.textContent = 'Первое пополнение будет ' + date.d + ' ' + MONTHS[date.m] + ', ' + fmtAmt(amount) + ' ₽';
-  }
-  if (schedEl) {
-    if (day === 'last') {
-      schedEl.style.whiteSpace = 'normal';
-      schedEl.textContent = 'Далее – каждый последний день месяца';
-    } else {
-      schedEl.textContent = 'Далее – каждое ' + day + '-е число';
-    }
-  }
+  firstEl.textContent = 'Первое пополнение будет ' + savingsSchedule.dateFormat.format(date) +
+    ', ' + savingsSchedule.amountFormat.format(Number(amount)) + ' ₽';
+  schedEl.style.whiteSpace = 'normal';
+  schedEl.textContent = 'Далее — ' + savingsSchedule.label(frequency, day);
+  document.getElementById('editScheduleLink').search = params.toString();
 })();
 </script>
 
