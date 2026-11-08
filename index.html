@@ -125,6 +125,15 @@
       background: var(--bg-hero-mesh-aqua);
       overflow: hidden;
     }
+    .hero--header {
+      display: none;
+      clip-path: inset(0 0 calc(100% - 110px));
+      pointer-events: none;
+      z-index: 6;
+    }
+    .phone--scrolled .hero--header {
+      display: block;
+    }
     .blob-teal {
       position: absolute;
       width: 420px;
@@ -170,7 +179,7 @@
       align-items: center;
       gap: 12px;
       padding: 0 16px;
-      z-index: 5;
+      z-index: 8;
     }
     .nav-avatar {
       width: 42px;
@@ -711,18 +720,6 @@
     <img src="assets/status-bar.svg" alt="" />
   </div>
 
-  <!-- SCROLL AREA -->
-  <div class="scroll-area">
-  <div class="screen-content">
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="blob-teal"><img src="assets/blob-teal.svg" alt="" /></div>
-    <div class="blob-mint"><img src="assets/blob-mint.svg" alt="" /></div>
-    <div class="blob-aqua"><img src="assets/blob-aqua.svg" alt="" /></div>
-    <div class="hero-fade"></div>
-  </div>
-
   <!-- NAV BAR -->
   <div class="nav-bar">
     <div class="nav-avatar">
@@ -736,6 +733,18 @@
       <img src="assets/chat-icon.svg" alt="" width="36" height="36" />
       <img src="assets/gigachat-crescent.svg" alt="" width="36" height="36" />
     </div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+  <div class="screen-content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="blob-teal"><img src="assets/blob-teal.svg" alt="" /></div>
+    <div class="blob-mint"><img src="assets/blob-mint.svg" alt="" /></div>
+    <div class="blob-aqua"><img src="assets/blob-aqua.svg" alt="" /></div>
+    <div class="hero-fade"></div>
   </div>
 
   <!-- BALANCE -->
@@ -916,5 +925,21 @@
   <div class="home-indicator"></div>
 
 </div>
+<script>
+  const homeScrollArea = document.querySelector('.scroll-area');
+  const homePhone = document.querySelector('.phone');
+  const headerGradient = homeScrollArea.querySelector('.hero').cloneNode(true);
+  headerGradient.classList.add('hero--header');
+  headerGradient.setAttribute('aria-hidden', 'true');
+  homePhone.prepend(headerGradient);
+
+  function updateHomeHeader() {
+    homePhone.classList.toggle('phone--scrolled', homeScrollArea.scrollTop > 0);
+  }
+
+  homeScrollArea.addEventListener('scroll', updateHomeHeader, { passive: true });
+  window.addEventListener('pageshow', updateHomeHeader);
+  updateHomeHeader();
+</script>
 </body>
 </html>
