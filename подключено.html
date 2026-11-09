@@ -373,8 +373,10 @@
   var date = savingsSchedule.nextDate(frequency, day);
   var firstEl = document.getElementById('firstTransferText');
   var schedEl = document.getElementById('scheduleText');
-  firstEl.textContent = 'Первое пополнение будет ' + savingsSchedule.dateFormat.format(date) +
-    ', ' + savingsSchedule.amountFormat.format(Number(amount)) + ' ₽';
+  firstEl.textContent = params.get('lowBalanceToday') === '1'
+    ? 'Если денег не хватит, сегодня пропустим пополнение.'
+    : 'Первое пополнение будет ' + savingsSchedule.dateFormat.format(date) +
+      ', ' + savingsSchedule.amountFormat.format(Number(amount)) + ' ₽';
   schedEl.style.whiteSpace = 'normal';
   schedEl.textContent = 'Далее — ' + savingsSchedule.label(frequency, day);
   document.getElementById('editScheduleLink').search = params.toString();

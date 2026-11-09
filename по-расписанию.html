@@ -58,7 +58,7 @@
       position: relative;
       width: 402px;
       height: 874px;
-      overflow: hidden;
+      overflow: clip;
       border-radius: 50px;
       background: linear-gradient(180deg,
         rgb(198, 244, 229) 0%,
@@ -205,6 +205,128 @@
       cursor: pointer;
       transition: width 200ms ease, opacity 200ms ease, border-radius 200ms ease;
     }
+    #screen0.has-topup-hint { --balance-extra: 48px; }
+    .topup-hint {
+      position: absolute;
+      top: 637px;
+      left: 16px;
+      width: 370px;
+      padding: 12px 16px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .65);
+      font: 500 13px/1.3 var(--ff);
+    }
+    .topup-link {
+      display: block;
+      min-height: 44px;
+      margin: -4px 0 -8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #0d8523;
+      font: 600 14px var(--ff);
+      cursor: pointer;
+    }
+    .topup-preview {
+      position: absolute;
+      inset: 0;
+      z-index: 32;
+      padding: 62px 16px 28px;
+      background: #fff;
+      color: #000;
+      font: 500 15px/1.35 var(--ff);
+    }
+    #scheduleStatusBar { z-index: 30; }
+    .phone:has(.topup-preview:not([hidden])) #scheduleStatusBar { z-index: 33; }
+    .topup-preview:not([hidden]) {
+      display: flex;
+      flex-direction: column;
+    }
+    .topup-header {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 50px;
+      margin-bottom: 16px;
+    }
+    .topup-header h2 { font: 600 19px/1.2 var(--ff); }
+    .topup-back {
+      position: absolute;
+      left: -8px;
+      top: 3px;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .topup-back img { width: 28px; height: 28px; }
+    .topup-transfer-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .topup-transfer-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #f4f4f4;
+      border-radius: 12px;
+    }
+    .topup-transfer-label { color: #737373; font-size: 13px; }
+    .topup-transfer-value { margin-top: 4px; font-size: 18px; }
+    .topup-transfer-account { margin-top: 4px; color: #737373; font-size: 14px; }
+    .topup-transfer-icon { width: 36px; height: 36px; flex: none; }
+    .topup-direction {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin: 16px auto;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+    }
+    .topup-direction img { width: 26px; height: 26px; }
+    .topup-transfer-amount { margin-top: 16px; }
+    .topup-demo-note {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #f2f5fb;
+      color: #3e4652;
+      font-size: 13px;
+    }
+    .topup-demo-note strong { display: block; margin-bottom: 4px; color: #111; }
+    #topupSourceError { margin-top: 8px; color: #a33e13; font-size: 13px; }
+    #confirmTopup {
+      width: 100%;
+      min-height: 54px;
+      flex: none;
+      border: 0;
+      border-radius: 16px;
+      background: #16862c;
+      color: #fff;
+      font: 600 16px var(--ff);
+      cursor: pointer;
+    }
+    #confirmTopup:disabled { opacity: .5; cursor: default; }
+    .topup-preview::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: calc(50% - 67px);
+      width: 134px;
+      height: 5px;
+      border-radius: 3px;
+      background: #000;
+      pointer-events: none;
+    }
   </style>
   <link rel="stylesheet" href="preview-fit.css" />
   <script src="preview-fit.js" defer></script>
@@ -219,7 +341,7 @@
     backdrop-filter:blur(20px) saturate(180%);"></div>
 
   <!-- Status bar -->
-  <div style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;z-index:30;background:transparent;">
+  <div id="scheduleStatusBar" style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;background:transparent;">
     <img src="assets/savings-status-bar.png" alt=""
       style="position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;mix-blend-mode:multiply;" />
   </div>
@@ -299,14 +421,19 @@
       </div>
 
       <!-- Hint: if not enough money, skip replenishment -->
-      <div style="position:absolute;top:642px;left:16px;width:370px;
+      <div id="skipHint" style="position:absolute;top:642px;left:16px;width:370px;
         display:flex;gap:8px;align-items:center;">
         <img src="assets/shield-check.svg" alt=""
           style="width:16px;height:16px;flex-shrink:0;max-width:none;" />
         <p style="font-family:var(--ff);font-size:13px;font-weight:500;color:#000000;white-space:nowrap;">Если денег не хватит – пропустим пополнение</p>
       </div>
 
-      <div id="freqTabs" style="position:absolute;top:682px;left:0;width:402px;height:38px;
+      <div id="topupHint" class="topup-hint" hidden>
+        <p>Суммы пополнения не хватает</p>
+        <button id="showTopup" class="topup-link" type="button"></button>
+      </div>
+
+      <div id="freqTabs" style="position:absolute;top:calc(682px + var(--balance-extra, 0px));left:0;width:402px;height:38px;
         overflow-x:auto;overflow-y:hidden;
         display:flex;gap:8px;align-items:center;
         padding-left:16px;padding-right:16px;
@@ -322,7 +449,7 @@
         </div>
       </div>
 
-      <div style="position:absolute;top:736px;left:16px;width:370px;
+      <div style="position:absolute;top:calc(736px + var(--balance-extra, 0px));left:16px;width:370px;
         display:flex;flex-direction:column;gap:4px;">
         <div id="amountCell" style="background:#fff;border-radius:16px;padding:8px 16px;
           display:flex;flex-direction:column;gap:4px;cursor:pointer;">
@@ -342,7 +469,7 @@
         </div>
       </div>
 
-      <div id="dateTrigger" style="position:absolute;top:842px;left:16px;width:370px;height:54px;
+      <div id="dateTrigger" style="position:absolute;top:calc(842px + var(--balance-extra, 0px));left:16px;width:370px;height:54px;
         background:#fff;border-radius:12px;padding:7px 16px 8px 16px;
         display:flex;align-items:center;cursor:pointer;">
         <div style="flex:1;display:flex;align-items:center;justify-content:space-between;">
@@ -355,7 +482,7 @@
         </div>
       </div>
 
-      <div style="height:1064px;pointer-events:none;"></div>
+      <div style="height:calc(1064px + var(--balance-extra, 0px));pointer-events:none;"></div>
 
     </div><!-- /screen0 -->
 
@@ -703,7 +830,7 @@
       <div style="padding:0 24px;">
         <p style="font-family:var(--ff);font-size:20px;font-weight:600;color:#000;white-space:nowrap;">Откуда</p>
       </div>
-      <div id="fromRow0" class="from-row" data-account="Дебетовый • 9432"
+      <div id="fromRow0" class="from-row" data-account="Дебетовый • 9432" data-balance="500"
         style="display:flex;height:63px;align-items:center;padding:0 16px;
         background:#e6f5eb;cursor:pointer;flex-shrink:0;">
         <div style="display:flex;gap:16px;align-items:center;flex:1;min-width:0;">
@@ -714,9 +841,9 @@
             <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;white-space:nowrap;">• 9432</p>
           </div>
         </div>
-        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">500 ₽</p>
+        <p data-source-balance style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">500 ₽</p>
       </div>
-      <div id="fromRow1" class="from-row" data-account="MIR • 3768"
+      <div id="fromRow1" class="from-row" data-account="MIR • 3768" data-balance="0"
         style="display:flex;height:63px;align-items:center;padding:0 16px;
         background:#fff;cursor:pointer;flex-shrink:0;">
         <div style="display:flex;gap:16px;align-items:center;flex:1;min-width:0;">
@@ -727,7 +854,7 @@
             <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#737373;white-space:nowrap;">• 3768</p>
           </div>
         </div>
-        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">0 ₽</p>
+        <p data-source-balance style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">0 ₽</p>
       </div>
     </div>
   </div><!-- /fromSheet -->
@@ -981,6 +1108,48 @@
     </div>
   </div><!-- /gcSheet -->
 
+  <section id="topupPreview" class="topup-preview" role="dialog" aria-modal="true" aria-labelledby="topupTitle" hidden>
+    <header class="topup-header">
+      <button id="cancelTopup" class="topup-back" type="button" aria-label="Назад">
+        <img src="assets/savings-chevron-left.svg" alt="" />
+      </button>
+      <h2 id="topupTitle">Между своими счетами</h2>
+    </header>
+    <div class="topup-transfer-content">
+      <div class="topup-transfer-field">
+        <div>
+          <p class="topup-transfer-label">Откуда</p>
+          <p id="topupSourceBalance" class="topup-transfer-value"></p>
+          <p class="topup-transfer-account">Платёжный счёт • 9173</p>
+        </div>
+        <img class="topup-transfer-icon" src="assets/schedule-icon-account.svg" alt="" />
+      </div>
+      <div class="topup-direction" aria-hidden="true">
+        <img src="assets/sber-transfers-between.svg" alt="" />
+      </div>
+      <div class="topup-transfer-field">
+        <div>
+          <p class="topup-transfer-label">Куда</p>
+          <p id="topupCardBalance" class="topup-transfer-value"></p>
+          <p id="topupCardName" class="topup-transfer-account"></p>
+        </div>
+        <img class="topup-transfer-icon" src="assets/schedule-icon-transfer.svg" alt="" />
+      </div>
+      <div class="topup-transfer-field topup-transfer-amount">
+        <div>
+          <p class="topup-transfer-label">Сколько</p>
+          <p id="topupTransferAmount" class="topup-transfer-value"></p>
+        </div>
+      </div>
+      <div class="topup-demo-note">
+        <strong>Это прототип</strong>
+        Баланс изменится только в демо. Реального перевода не будет.
+      </div>
+      <p id="topupSourceError" hidden>На демонстрационном счёте недостаточно средств.</p>
+    </div>
+    <button id="confirmTopup" type="button"></button>
+  </section>
+
 </div><!-- /phone -->
 
 <script src="schedule.js"></script>
@@ -1170,8 +1339,18 @@
       var barLine2 = document.getElementById('barLine2');
       if (!barLine1 || !barLine2) return;
       var amt = kbIsOpen ? (curAmt || prevAmt) : prevAmt;
-      barLine1.textContent = 'Пополним на ' + fmtAmt(amt) + ' ₽';
-      var date = savingsSchedule.nextDate(getFrequency(), getSelectedBarDay());
+      var today = new Date();
+      var date = savingsSchedule.nextDate(getFrequency(), getSelectedBarDay(), today);
+      var shortfall = Number(amt) - Number(selectedFromRow.dataset.balance);
+      var showTopup = !kbIsOpen && !amountError && Number(amt) >= 100 &&
+        date.toDateString() === today.toDateString() && shortfall > 0;
+      topupHint.hidden = !showTopup;
+      skipHint.style.display = showTopup ? 'none' : 'flex';
+      screen0.classList.toggle('has-topup-hint', showTopup);
+      if (showTopup) {
+        showTopupButton.textContent = 'Пополнить на ' + fmtAmt(String(shortfall)) + ' ₽';
+      }
+      barLine1.textContent = (showTopup ? 'Перевод на ' : 'Пополним на ') + fmtAmt(amt) + ' ₽';
       barLine2.textContent = savingsSchedule.dateFormat.format(date);
     }
 
@@ -1310,6 +1489,7 @@
         source: document.getElementById('fromAccountText').textContent.trim(),
         from: '1'
       });
+      if (!topupHint.hidden) params.set('lowBalanceToday', '1');
       window.location.href = 'подключено.html?' + params;
     });
 
@@ -1423,6 +1603,56 @@
     var fromSheet       = document.getElementById('fromSheet');
     var fromTrigger     = document.getElementById('fromTrigger');
     var fromAccountText = document.getElementById('fromAccountText');
+    var selectedFromRow = document.getElementById('fromRow0');
+    var topupHint = document.getElementById('topupHint');
+    var skipHint = document.getElementById('skipHint');
+    var showTopupButton = document.getElementById('showTopup');
+    var topupPreview = document.getElementById('topupPreview');
+    var cancelTopupButton = document.getElementById('cancelTopup');
+    var confirmTopupButton = document.getElementById('confirmTopup');
+    var demoSourceBalance = 50000;
+    var topupAmount = 0;
+    var coveredControls = Array.from(topupPreview.parentElement.children).filter(function (element) {
+      return element !== topupPreview;
+    });
+
+    function formatTopupAmount(value) {
+      return fmtAmt(String(value)) + ' ₽';
+    }
+
+    function closeTopup() {
+      topupPreview.hidden = true;
+      coveredControls.forEach(function (element) { element.inert = false; });
+      (topupHint.hidden ? document.getElementById('connectBtn') : showTopupButton)
+        .focus({ preventScroll: true });
+    }
+
+    showTopupButton.addEventListener('click', function () {
+      if (wasDragged) return;
+      var cardBalance = Number(selectedFromRow.dataset.balance);
+      topupAmount = Number(prevAmt) - cardBalance;
+      document.getElementById('topupSourceBalance').textContent = formatTopupAmount(demoSourceBalance);
+      document.getElementById('topupCardBalance').textContent = formatTopupAmount(cardBalance);
+      document.getElementById('topupCardName').textContent = selectedFromRow.dataset.account;
+      document.getElementById('topupTransferAmount').textContent = formatTopupAmount(topupAmount);
+      confirmTopupButton.textContent = 'Перевести ' + formatTopupAmount(topupAmount);
+      confirmTopupButton.disabled = topupAmount > demoSourceBalance;
+      document.getElementById('topupSourceError').hidden = !confirmTopupButton.disabled;
+      topupPreview.hidden = false;
+      coveredControls.forEach(function (element) { element.inert = true; });
+      cancelTopupButton.focus({ preventScroll: true });
+    });
+    cancelTopupButton.addEventListener('click', closeTopup);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !topupPreview.hidden) closeTopup();
+    });
+    confirmTopupButton.addEventListener('click', function () {
+      demoSourceBalance -= topupAmount;
+      selectedFromRow.dataset.balance = prevAmt;
+      selectedFromRow.querySelector('[data-source-balance]').textContent = formatTopupAmount(prevAmt);
+      updateBottomBar();
+      closeTopup();
+    });
 
     function openFrom() {
       fromOverlay.style.opacity = '1';
@@ -1442,6 +1672,8 @@
       row.addEventListener('click', function () {
         var account = row.getAttribute('data-account');
         fromAccountText.textContent = account;
+        selectedFromRow = row;
+        updateBottomBar();
         document.querySelectorAll('.from-row').forEach(function (r) {
           r.style.background = '#fff';
         });
