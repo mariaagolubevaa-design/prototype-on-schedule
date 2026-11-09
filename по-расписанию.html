@@ -236,6 +236,18 @@
       color: #000;
       font: 500 15px/1.35 var(--ff);
     }
+    .schedule-status-blur {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 90px;
+      z-index: 29;
+      pointer-events: none;
+      background: rgba(198, 244, 229, .55);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 0 48%, transparent 100%);
+    }
     #scheduleStatusBar { z-index: 30; }
     .phone:has(.topup-preview:not([hidden])) #scheduleStatusBar { z-index: 33; }
     .topup-preview:not([hidden]) {
@@ -335,10 +347,7 @@
 <div class="phone">
 
   <!-- Status bar blur backdrop (iOS-style) -->
-  <div style="position:absolute;top:0;left:0;width:402px;height:62px;z-index:29;pointer-events:none;
-    background:rgba(198,244,229,0.70);
-    -webkit-backdrop-filter:blur(20px) saturate(180%);
-    backdrop-filter:blur(20px) saturate(180%);"></div>
+  <div class="schedule-status-blur" aria-hidden="true"></div>
 
   <!-- Status bar -->
   <div id="scheduleStatusBar" style="position:absolute;top:0;left:0;width:402px;height:62px;overflow:hidden;pointer-events:none;background:transparent;">
