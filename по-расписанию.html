@@ -178,6 +178,16 @@
     .cal-day--selected p {
       color: #fff;
     }
+    .cal-day.cal-day--today { position: relative; }
+    .cal-day .cal-today-label {
+      position: absolute;
+      top: 100%;
+    }
+    .cal-today-label {
+      display: block;
+      color: #0d8523;
+      font: 500 9px/1.1 var(--ff);
+    }
 
     .kb-key {
       height: 52px;
@@ -1029,7 +1039,9 @@
       <div style="position:absolute;inset:0;pointer-events:none;
         box-shadow:inset 1px 1px 4px 0px rgba(223,229,233,0.25),
                    inset 1px 1px 4px 0px rgba(223,229,233,0.30);"></div>
-      <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Последний день</p>
+      <div id="lastDayLabel">
+        <p style="font-family:var(--ff);font-size:15px;font-weight:500;color:#000;white-space:nowrap;">Последний день</p>
+      </div>
       <div id="lastDayCheckbox" style="width:20px;height:20px;border:1.9px solid #a7a7a7;border-radius:4px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;"></div>
     </div>
     <div id="weekPicker" hidden style="background:#fff;border-radius:16px 16px 0 0;padding:24px 16px 28px;">
@@ -1228,6 +1240,7 @@
       weekPicker.hidden = !weekly;
       monthPicker.style.display = weekly ? 'none' : 'flex';
       lastDayRow.style.display = weekly ? 'none' : 'flex';
+      if (!weekly) markTodayInCalendar();
       Array.from(weekButtons.children).forEach(function (button) {
         var day = Number(button.dataset.day);
         var selected = day === weekDay;
@@ -1249,6 +1262,23 @@
     calOverlay.addEventListener('click', closeCal);
 
     var days          = document.querySelectorAll('.cal-day');
+    var calendarTodayLabel = document.createElement('span');
+    calendarTodayLabel.className = 'cal-today-label';
+    calendarTodayLabel.textContent = 'Сегодня';
+    var markedCalendarDay;
+
+    function markTodayInCalendar() {
+      if (markedCalendarDay) {
+        markedCalendarDay.classList.remove('cal-day--today');
+        markedCalendarDay.removeAttribute('aria-current');
+      }
+      var todayNumber = new Date().getDate();
+      markedCalendarDay = days[todayNumber - 1] || document.getElementById('lastDayLabel');
+      markedCalendarDay.classList.add('cal-day--today');
+      markedCalendarDay.setAttribute('aria-current', 'date');
+      markedCalendarDay.appendChild(calendarTodayLabel);
+    }
+
     var checkbox      = document.getElementById('lastDayCheckbox');
     var day30         = document.getElementById('calDay30');
     var dateValueText = document.getElementById('dateValueText');
