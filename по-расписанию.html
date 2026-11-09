@@ -248,6 +248,11 @@
       -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 100%);
       mask-image: linear-gradient(to bottom, #000 0 48%, transparent 100%);
     }
+    .schedule-header-control { transition: visibility 0s 230ms; }
+    .phone.is-gigachat-open .schedule-header-control {
+      visibility: hidden;
+      transition-delay: 0s;
+    }
     #scheduleStatusBar { z-index: 30; }
     .phone:has(.topup-preview:not([hidden])) #scheduleStatusBar { z-index: 33; }
     .topup-preview:not([hidden]) {
@@ -356,14 +361,14 @@
   </div>
 
   <!-- Back arrow -->
-  <a href="накопительный-счёт.html"
+  <a class="schedule-header-control" href="накопительный-счёт.html"
     style="position:absolute;top:67px;left:2px;display:block;width:28px;height:28px;line-height:0;z-index:31;">
     <img src="assets/savings-chevron-left.svg" alt="Назад"
       style="width:28px;height:28px;max-width:none;" />
   </a>
 
   <!-- Pagination dots (4 dots, default dot0 active) -->
-  <div style="position:absolute;top:79px;left:50%;transform:translateX(-50%);height:3px;z-index:31;display:flex;align-items:center;gap:5px;">
+  <div class="schedule-header-control" style="position:absolute;top:79px;left:50%;transform:translateX(-50%);height:3px;z-index:31;display:flex;align-items:center;gap:5px;">
     <div id="dot0" class="pg-dot" style="width:12px;opacity:1;border-radius:99px;"></div>
     <div id="dot1" class="pg-dot" style="width:3px;opacity:0.25;border-radius:50%;"></div>
     <div id="dot2" class="pg-dot" style="width:3px;opacity:0.25;border-radius:50%;"></div>
@@ -1521,7 +1526,10 @@
     var gcClose     = document.getElementById('gcClose');
     var gcAnswered  = false;
 
+    var gcPhone = gcSheet.closest('.phone');
+
     function openGc() {
+      gcPhone.classList.add('is-gigachat-open');
       gcAnswered = false;
       gcChat.innerHTML = '';
       gcInputText.textContent = 'Хочу накопить 50 000 ₽ до Нового года. Сколько мне нужно откладывать?';
@@ -1532,6 +1540,7 @@
     }
 
     function closeGc() {
+      gcPhone.classList.remove('is-gigachat-open');
       gcOverlay.style.opacity = '0';
       gcOverlay.style.pointerEvents = 'none';
       gcSheet.style.transform = 'translateY(100%)';
